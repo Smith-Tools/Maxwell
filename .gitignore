@@ -1,0 +1,64 @@
+# Maxwell AI Agent Architecture System
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Xcode
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/*.xcworkspace
+*.xcodeproj/**/.DS_Store
+*.xcworkspace/xcuserdata
+*.xcworkspace/xcshareddata
+
+# Build artifacts
+build/
+DerivedData/
+*.xcarchive
+*.ipa
+
+# Claude AI specific
+.claude/session-*
+.claude/logs/
+.claude/cache/
+.claude/tmp/
+
+# Development temp folders
+_development/_temp/
+temp/
+tmp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Node.js (if any JS tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Backup files
+*.bak
+*.backup
+*.orig
