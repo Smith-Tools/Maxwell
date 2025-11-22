@@ -9,6 +9,7 @@ tools:
   - Edit
   - Write
   - Bash
+model: inherit
 color: orange
 ---
 

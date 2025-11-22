@@ -51,8 +51,8 @@ deploy: build
 	@echo ""
 	@echo "🤖 Deploying Agents..."
 	mkdir -p "$(LOCAL_AGENT_DIR)"
-	cp "$(MAXWELL_SOURCE)/agent/"*.md "$(LOCAL_AGENT_DIR)/"
-	@echo "   ✅ Agents deployed: $(find $(LOCAL_AGENT_DIR) -name "*.md" | wc -l | awk '{print $$1}') agents"
+	cp "$(MAXWELL_SOURCE)/agent/maxwell.md" "$(LOCAL_AGENT_DIR)/" 2>/dev/null || echo "   ⚠️  maxwell.md not found"
+	@echo "   ✅ Agents deployed: $(find $(LOCAL_AGENT_DIR) -name "maxwell.md" | wc -l | awk '{print $$1}') agents"
 
 	@echo ""
 	@echo "🗄️ Deploying Database..."
