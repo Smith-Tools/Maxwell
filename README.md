@@ -1,6 +1,10 @@
-# Maxwell - AI Agent Architecture System
+# Maxwell - Framework Expertise & Cross-Domain Integration System
 
-**Maxwell** is a modular AI agent architecture system designed for cloud-based development assistance. Each module provides specialized expertise for specific frameworks and domains, complete with agents, skills, and validation rules.
+**Maxwell** is a knowledge and expertise system for helping developers and AI agents navigate complex, multi-framework Apple development. Rather than storing expertise in siloed skills, Maxwell provides a unified knowledge layer that enables both auto-triggered quick answers and comprehensive cross-domain problem solving.
+
+> **Core Insight**: Maxwell's value is the knowledge content (90+ patterns, integrations, and discoveries), not the architecture. The system is organizational scaffolding that keeps expertise accessible and maintainable.
+
+**For the architectural decision and rationale, see [`ARCHITECTURE-DECISION.md`](ARCHITECTURE-DECISION.md)** - especially if you're wondering "why Maxwell instead of upgrading Smith?" or "why not consolidate everything?"
 
 ## Architecture Overview
 
@@ -22,6 +26,33 @@ maxwell-module/
 ├── _development/            # Development and research content
 └── README.md                # Module-specific documentation
 ```
+
+## The Unified Knowledge Layer
+
+Maxwell uses a shared SQLite database (extending sosumi's proven pattern) with four critical tables:
+
+1. **patterns**: Domain-specific patterns (TCA, SharePlay, RealityKit, etc.)
+2. **integrations**: Cross-domain bridges (TCA + SharePlay, RealityKit + TCA, etc.)
+3. **anti_patterns**: Common bugs with root causes and fixes
+4. **discoveries**: Real-world bugs and solutions from production apps
+
+This unified layer enables:
+- **Skills** (auto-triggered) to answer single-domain questions fast
+- **Subagent** (explicit) to answer cross-domain questions with code analysis
+- Both accessing the same knowledge source (no duplication)
+
+### Why This Matters
+
+Modern Apple apps are multi-framework:
+```
+App = TCA state + SharePlay collaboration + RealityKit 3D
+      + CloudKit sync + Core Data + SwiftUI/AppKit
+```
+
+A developer doesn't ask "How do I use TCA?" but rather:
+**"How do I sync RealityKit entities across a TCA-managed SharePlay session?"**
+
+This is a cross-domain question. The unified knowledge layer makes it answerable.
 
 ## Available Modules
 

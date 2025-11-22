@@ -1,0 +1,43 @@
+# Swift Package Manager build artifacts
+.build/
+
+# Swift Package Manager resolved dependencies
+.resolved/
+
+# Xcode build artifacts
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Generated files
+*.swiftdoc
+*.swiftmodule
+*.swiftsourceinfo
+*.abi.json
+
+# Build output
+debug/
+release/
+
+# Lock files
+.lock
+
+# Cache directories
+ModuleCache/
+index/
+
+# Object files
+*.o
+*.dia
+*.d
+*.swiftdeps
+
+# IDE files
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
