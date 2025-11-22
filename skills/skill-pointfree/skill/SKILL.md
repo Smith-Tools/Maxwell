@@ -1,89 +1,158 @@
 ---
-name: Point-Free Ecosystem
-description: Point-Free framework coordination expert that analyzes requirements, delegates to framework specialists, and synthesizes integrated solutions across TCA, Dependencies, Navigation, Testing, and other Point-Free frameworks.
+name: Point-Free Ecosystem (Includes TCA)
+description: Complete Point-Free ecosystem expert providing authoritative guidance on TCA 1.23.0+, Dependencies, Navigation, Testing, and multi-framework integration. Point-Free created TCA - this skill is the definitive source for all Point-Free patterns.
 tags:
   - "Point-Free"
-  - "Coordination"
-  - "Integration"
-  - "Architecture"
   - "TCA"
+  - "Swift Composable Architecture"
   - "Dependencies"
   - "Navigation"
   - "Testing"
-  - "Multi-framework"
-  - "Swift Composable Architecture"
+  - "@Shared"
+  - "@Bindable"
+  - "Reducer"
+  - "TestStore"
+  - "Integration"
+  - "Architecture"
 triggers:
+  - "TCA"
+  - "@Shared"
+  - "@Bindable"
+  - "Reducer"
+  - "TestStore"
   - "Point-Free"
+  - "Dependencies"
+  - "Navigation"
   - "coordinate"
   - "integrate"
-  - "multiple frameworks"
-  - "together"
-  - "combination"
   - "architecture"
-  - "full stack"
-  - "framework integration"
-version: "1.0.0"
+version: "2.0.0"
 author: "Claude Code Skill - Maxwell Architecture"
 ---
 
-# Point-Free Ecosystem Coordination Skill
+# Point-Free Ecosystem Skill (Including TCA)
 
-**For:** Swift development teams using multiple Point-Free frameworks
-**Purpose:** Expert coordination and integration across the entire Point-Free ecosystem
-**Frameworks:** TCA, Dependencies, Navigation, Testing, Clocks, Sharing
-**Integration Level:** Multi-framework architecture coordination
+**For:** Swift development teams using Point-Free frameworks - the definitive source for TCA and all Point-Free patterns
+**Purpose:** Authoritative guidance on TCA 1.23.0+ and integration across the entire Point-Free ecosystem
+**Frameworks:** TCA (authoritative), Dependencies, Navigation, Testing, Clocks, Sharing
+**Authority Level:** Canonical - Point-Free created TCA, this is the source of truth
 
 ## 🎯 What This Skill Does
 
 ### Core Responsibilities
 
-- **Framework Detection** - Automatically identify which Point-Free frameworks are needed
-- **Specialist Delegation** - Route questions to appropriate framework specialists
-- **Integration Synthesis** - Combine specialist responses into cohesive solutions
-- **Pattern Coordination** - Provide cross-framework best practices and patterns
-- **Architecture Validation** - Ensure multi-framework implementations follow best practices
-- **Testing Strategy** - Coordinate testing approaches across framework boundaries
+- **TCA 1.23.0+ Authority** - Definitive source for modern TCA patterns, anti-patterns, and best practices
+- **Pattern Recognition** - Identify correct TCA patterns (@Shared, @Bindable, navigation, testing)
+- **Anti-Pattern Detection** - Spot deprecated APIs and common TCA mistakes (WithViewStore, IfLetStore, etc.)
+- **Framework Integration** - Coordinate TCA with Dependencies, Navigation, and Testing
+- **Architecture Validation** - Ensure implementations follow Point-Free canonical patterns
+- **Migration Guidance** - Help transition from deprecated TCA APIs to modern patterns
 
 ### When to Use This Skill
 
 **You should invoke this skill when:**
 
 ```
-"How do I integrate TCA with navigation and API calls?"
+# TCA Questions (Primary Authority)
+"How should I structure TCA navigation for this feature?"
+"Is this the right TCA pattern for shared state?"
+"What's the modern way to handle optional child features?"
+"How do I test this @Shared state properly?"
+"Should I use @Shared or @Dependency here?"
+"Help me migrate from deprecated TCA APIs"
+"Why is my TCA code showing WithViewStore/IfLetStore errors?"
+"How do I structure a TCA reducer to avoid type inference explosion?"
+
+# Integration Questions
+"How do I integrate TCA with Dependencies and Navigation?"
 "What's the best way to coordinate shared state across multiple features?"
-"Should I use @Shared or @Dependency for this use case?"
 "How do I test an app that uses TCA, Dependencies, and Navigation together?"
 "Build a complete app architecture with Point-Free frameworks"
-"I need to coordinate multiple Point-Free frameworks for a complex feature"
+"Coordinate multiple Point-Free frameworks for a complex feature"
 ```
 
 ## 🔄 Integration with Other Skills
 
-### maxwell-tca (TCA Specialist)
-- **maxwell-pointfree**: High-level coordination and routing
-- **maxwell-tca**: Deep TCA pattern expertise and implementation details
-- **When combined**: Use maxwell-pointfree for TCA + other frameworks, maxwell-tca for pure TCA questions
+**CONsolidATED**: This skill now includes all TCA expertise that was previously in maxwell-tca. Point-Free created TCA, making this the definitive and authoritative source.
 
-### maxwell-dependencies (Dependencies Specialist)
-- **maxwell-pointfree**: Integration decisions and cross-framework coordination
-- **maxwell-dependencies**: Dependency injection patterns and @DependencyClient expertise
-- **When combined**: Use maxwell-pointfree for architecture decisions, maxwell-dependencies for implementation details
+### skill-shareplay (SharePlay Specialist)
+- **skill-pointfree**: TCA + Dependencies + Navigation patterns for SharePlay integration
+- **skill-shareplay**: SharePlay-specific patterns and GroupSession coordination
+- **When combined**: Use skill-pointfree for TCA patterns in SharePlay context, skill-shareplay for SharePlay specifics
 
-### maxwell-navigation (Navigation Specialist)
-- **maxwell-pointfree**: Navigation as part of larger architecture
-- **maxwell-navigation**: Deep navigation patterns and state coordination
-- **When combined**: Use maxwell-pointfree for full app architecture, maxwell-navigation for navigation specifics
+### skill-visionos (VisionOS Specialist)
+- **skill-pointfree**: TCA patterns adapted for visionOS platform
+- **skill-visionos**: Platform-specific visionOS patterns and RealityKit integration
+- **When combined**: Use skill-pointfree for TCA + Dependencies patterns on visionOS, skill-visionos for platform specifics
 
-## ⚡ Framework Detection Matrix
+### skill-architectural (Architecture Specialist)
+- **skill-pointfree**: Point-Free ecosystem patterns and integration guidance
+- **skill-architectural**: Cross-domain architecture decisions and skill coordination
+- **When combined**: skill-pointfree provides authoritative Point-Free knowledge, skill-architectural handles broader architectural questions
 
-| Query Keywords | Primary Framework | Secondary Frameworks | Routing Strategy |
-|----------------|-------------------|----------------------|------------------|
-| "TCA state", "reducer", "@Bindable" | maxwell-tca | - | Direct routing |
-| "dependency", "@Dependency", "injection" | maxwell-dependencies | - | Direct routing |
-| "navigation", "routing", "Navigator" | maxwell-navigation | maxwell-tca | Coordinate specialists |
-| "test", "TestStore", "snapshot" | maxwell-pointfree-testing | maxwell-tca | Coordinate specialists |
-| "integrate", "together", "combine" | maxwell-pointfree | Multiple | Parallel delegation |
-| "architecture", "full stack", "complete app" | maxwell-pointfree | All relevant | Sequential coordination |
+## ⚡ TCA Pattern Detection & Routing
+
+**This skill is the authoritative source for all TCA patterns - Point-Free created TCA**
+
+| Query Keywords | Domain | Primary Guide | Pattern Focus |
+|----------------|--------|--------------|---------------|
+| "@Shared", "shared state", "owner" | State Management | TCA-SHARED-STATE.md | Single owner + @SharedReader |
+| "@Bindable", "observation", "WithViewStore" | State Observation | TCA-PATTERNS.md Pattern 1 | Modern observation patterns |
+| "navigation", "sheet", "navigator" | Navigation | TCA-NAVIGATION.md | Sheet-based navigation |
+| "TestStore", "@Test", "testing" | Testing | TCA-TESTING.md | Swift Testing integration |
+| "@Dependency", "injection", "client" | Dependencies | TCA-DEPENDENCIES.md | Dependency injection patterns |
+| "reducer", "action", "effect" | Core TCA | TCA-PATTERNS.md | Reducer architecture |
+| "WithViewStore", "IfLetStore" | Migration | TCA-PATTERNS.md Quick Ref | Deprecated API migration |
+| "type inference", "compilation" | Performance | DISCOVERY-16-*.md | Type inference anti-patterns |
+
+## 📖 Core TCA Knowledge Areas (Consolidated)
+
+### 1. **TCA Pattern Foundations** (guides/TCA-PATTERNS.md)
+- Pattern 1: State observation with `@Bindable`
+- Pattern 2: Optional state navigation (sheets + scope)
+- Pattern 3: Multiple navigation destinations
+- Pattern 4: Form input bindings
+- Pattern 5: Shared state with `@Shared` and `@SharedReader`
+- Common mistakes and anti-patterns
+
+### 2. **Navigation Patterns** (guides/TCA-NAVIGATION.md)
+- Sheet-based optional child features
+- Multiple enum-based destinations
+- Popover and alert presentations
+- Navigation stack integration
+- Lifecycle management and state cleanup
+
+### 3. **Shared State Discipline** (guides/TCA-SHARED-STATE.md)
+- Single owner pattern for `@Shared`
+- `@SharedReader` for read-only access
+- Persistence integration (.appStorage, .fileStorage)
+- Testing @Shared state in features
+- Race condition prevention
+
+### 4. **Dependencies & Injection** (guides/TCA-DEPENDENCIES.md)
+- `@DependencyClient` pattern with Swift 6.2 strict concurrency
+- Defining test values and preview values
+- Proper mocking for different scenarios
+- Platform-specific dependency injection
+- Avoiding common dependency patterns
+
+### 5. **Testing Strategies** (guides/TCA-TESTING.md)
+- Swift Testing framework integration (not XCTest)
+- TestStore setup and usage
+- Testing reducers, effects, and side effects
+- @Shared state testing strategies
+- Deterministic time with TestClock
+
+### 6. **Advanced Topics** (guides/)
+- **TCA-TRIGGERS.md** - Action routing, effect composition, cancellation
+- **DISCOVERY-16-TCA-SWIFTUI-TYPE-INFERENCE.md** - Type inference anti-patterns
+
+### 7. **Validation Rules** (validation/)
+- **Rule 1.1** - Monolithic features detection
+- **Rule 1.2** - Closure injection violations
+- **Rule 1.3** - Code duplication patterns
+- **Rule 1.4** - Unclear organization
+- **Rule 1.5** - Tightly coupled state
 
 ## 📖 Core Integration Areas
 
@@ -111,40 +180,139 @@ author: "Claude Code Skill - Maxwell Architecture"
 - Performance optimization across frameworks
 - Error handling integration
 
-## 🏗️ Coordination Patterns
+## 🚨 Critical TCA Anti-Patterns (Point-Free Authoritative)
 
-### Pattern 1: Parallel Specialist Delegation
+**Point-Free created TCA - these anti-patterns are definitively wrong:**
+
+### ❌ Deprecated/Wrong vs ✅ Modern Alternative
+
+| ❌ Deprecated/Wrong | ✅ Modern Alternative | TCA Version | Why Point-Free Changed This |
+|------------------|-------------------|-------------|-----------------------------|
+| `WithViewStore` | `@Bindable` + direct access | 1.5+ | Manual observation unnecessary - TCA handles it |
+| `IfLetStore` | `.sheet(item:)` + `.scope()` | 1.5+ | Optional navigation built into SwiftUI |
+| `@Perception.Bindable` | `@Bindable` (from TCA) | 1.0+ | @Perception dependency eliminated |
+| `Shared(value: x)` | `Shared(wrappedValue: x)` | 1.8+ | Correct argument label required |
+| Manual `.onReceive()` | `@Bindable` with `@ObservableState` | 1.5+ | Automatic observation more efficient |
+| Multiple writers to `@Shared` | Single owner + `@SharedReader` | 1.8+ | Race condition prevention |
+| Nested `CombineReducers` | Flat `@ReducerBuilder` | 1.0+ | Type inference explosion fix |
+| `Task.detached` in reducers | `Task { @MainActor in ... }` | 6.0+ | Actor isolation requirement |
+| Direct `Date()` calls | `@Dependency(\.dateClient)` | 1.0+ | Deterministic testing |
+| `@State` in reducers | `@ObservableState` | 1.0+ | Views-only vs state distinction |
+
+### ⚠️ Performance Anti-Patterns to Avoid
+
+| Pattern | Symptom | Point-Free Solution |
+|---------|---------|--------------------|
+| Large complex State structs | Slow compilation | Extract child features |
+| Deeply nested enums | Type inference explosion | Flatten enum structure |
+| Many computed properties | Compilation hangs | Move to view logic |
+| Complex expressions in State | Slow builds | Simplify state shape |
+
+## 🏗️ TCA Implementation Patterns
+
+### Pattern 1: State Observation
+```swift
+// ✅ Modern Point-Free Way
+@Bindable var store: StoreOf<Feature>
+Text(store.title)
+
+// ❌ Deprecated Way (Anti-Pattern)
+WithViewStore(self.store) { viewStore in
+  Text(viewStore.title)
+}
 ```
-User: "How do I handle API calls with TCA state and navigation?"
 
-→ maxwell-pointfree analyzes query
-→ Detects: TCA + Dependencies + Navigation
-→ Delegates in parallel:
-  - maxwell-tca: "TCA state management for API responses"
-  - maxwell-dependencies: "Dependency injection for API clients"
-  - maxwell-navigation: "Navigation based on API state"
-→ Synthesizes integrated solution
+### Pattern 2: Optional Navigation
+```swift
+// ✅ Modern Point-Free Way
+.sheet(item: $store.scope(state: \.child, action: \.child)) { childStore in
+  ChildView(store: childStore)
+}
+
+// ❌ Deprecated Way (Anti-Pattern)
+IfLetStore(
+  self.store.scope(state: \.child, action: \.child)
+) { childStore in
+  ChildView(store: childStore)
+}
 ```
 
-### Pattern 2: Sequential Coordination
-```
-User: "Build an authentication flow"
+### Pattern 3: Shared State (Single Owner)
+```swift
+// ✅ Point-Free Single Owner Pattern
+@Reducer struct AuthFeature {
+  @ObservableState struct State {
+    @Shared var auth: AuthState  // Owner can modify
+  }
 
-→ maxwell-pointfree: Architecture planning
-→ Delegates to maxwell-tca: "Auth state management"
-→ Delegates to maxwell-dependencies: "Auth client dependencies"
-→ Delegates to maxwell-navigation: "Navigation flow coordination"
-→ Combines into complete implementation
+  @Reducer struct ProfileFeature {
+    @ObservableState struct State {
+      @SharedReader var auth: AuthState  // Reader only
+    }
+  }
+}
 ```
 
-### Pattern 3: Decision Tree Routing
-```
-User: "Should I use @Shared or @Dependency?"
+## 🎯 TCA Decision Trees (Point-Free Authority)
 
-→ maxwell-pointfree: Decision tree analysis
-→ Based on: Scope, mutability, testing needs, lifecycle
-→ Provides specific recommendation with rationale
-→ Optionally delegates to specialist for implementation details
+### @Shared vs @Dependency Decision Tree
+```
+Need to share data across features?
+├─ Yes → @Shared
+│   ├─ Need persistence? → @Shared(.appStorage/.fileStorage)
+│   └─ Temporary only? → @Shared()
+└─ No → @Dependency
+    ├─ External service? → @Dependency(\.serviceClient)
+    └─ System API? → @Dependency(\.dateClient/.uuidClient)
+```
+
+### Feature Extraction Decision Tree
+```
+Reducer > 200 lines?
+├─ Yes → Extract child feature
+│   ├─ Related functionality? → Single child
+│   └─ Unrelated responsibilities? → Multiple children
+└─ No → Keep in current feature
+```
+
+## 🧪 TCA Testing Patterns (Point-Free)
+
+### TestStore Usage
+```swift
+@Test
+@MainActor
+func testFeature() async {
+  let store = TestStore(initialState: Feature.State()) {
+    Feature()
+  } withDependencies: {
+    $0.apiClient.fetch = { "data" }
+  }
+
+  await store.send(.fetchTapped) {
+    $0.isLoading = true
+  }
+
+  await store.receive(.response(.success("data"))) {
+    $0.isLoading = false
+    $0.data = "data"
+  }
+}
+```
+
+### @Shared State Testing
+```swift
+@Test
+@MainActor
+func testSharedState() async {
+  let sharedAuth = AuthState(userID: "123")
+
+  let store = TestStore(initialState: Feature.State(sharedAuth: sharedAuth)) {
+    Feature()
+  }
+
+  await store.send(.logoutTapped)
+  // Verify sharedAuth state changed
+}
 ```
 
 ## 🚨 Red Flags: Coordination Anti-Patterns
