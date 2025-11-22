@@ -1,5 +1,7 @@
 ---
 name: maxwell
+allowed-tools:
+  - Bash
 description: Framework expertise specialist for complex Apple development. Auto-triggered skill for TCA, SharePlay, RealityKit, and cross-domain patterns. Routes to appropriate knowledge or recommends explicit Maxwell subagent invocation for code analysis.
 tags:
   - Maxwell
@@ -96,11 +98,8 @@ Action: Return pattern directly
 ```
 
 ### Step 3: Query Knowledge Layer
-```sql
-SELECT pattern_name, problem, solution, code_example, validation_checklist
-FROM patterns
-WHERE domain = 'TCA' AND pattern_name LIKE '%shared%'
-LIMIT 1;
+```bash
+maxwell search "@Shared" --domain TCA --limit 1
 ```
 
 ### Step 4: Return Answer
@@ -207,26 +206,34 @@ Don't escalate for:
 
 ## Accessing the Knowledge Layer
 
-When this skill answers a question, it queries:
+When this skill answers a question, it queries the maxwell knowledge base using the CLI:
 
-### For single-domain:
-```sql
-SELECT * FROM patterns
-WHERE domain = 'TCA' OR domain = 'SharePlay' OR domain = 'RealityKit'
-  AND pattern_name LIKE '%[user-keyword]%'
+### For single-domain lookups:
+```bash
+maxwell search "TCA @Shared" --domain TCA
+maxwell pattern "@Shared"
+maxwell domain TCA
 ```
 
-### For potential cross-domain:
-```sql
-SELECT * FROM integrations
-WHERE (domain_a LIKE '%[keyword1]%' AND domain_b LIKE '%[keyword2]%')
-  OR (domain_a LIKE '%[keyword2]%' AND domain_b LIKE '%[keyword1]%')
+### For cross-domain patterns:
+```bash
+maxwell search "TCA SharePlay sync"
+maxwell integration TCA SharePlay
 ```
 
-### For known bugs:
-```sql
-SELECT * FROM anti_patterns
-WHERE symptom LIKE '%[user-symptom]%'
+### Command Examples:
+```bash
+# Search for patterns matching keywords
+maxwell search "GroupSessionMessenger"
+
+# Get all patterns for a specific domain
+maxwell domain SharePlay
+
+# Find integration patterns between domains
+maxwell integration TCA SharePlay
+
+# Get specific pattern by name
+maxwell pattern "TCA @Shared Single Owner"
 ```
 
 ---

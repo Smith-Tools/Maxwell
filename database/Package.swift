@@ -10,8 +10,8 @@ let package = Package(
     ],
     products: [
         .executable(
-            name: "MaxwellMigrator",
-            targets: ["MaxwellMigrator"]
+            name: "maxwell",
+            targets: ["MaxwellCLI"]
         ),
         .library(
             name: "MaxwellDatabase",
@@ -19,26 +19,21 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/stephencelis/SQLite.swift", from: "0.14.1")
+        .package(url: "https://github.com/stephencelis/SQLite.swift", from: "0.14.1"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0")
     ],
     targets: [
         .executableTarget(
-            name: "MaxwellMigrator",
+            name: "MaxwellCLI",
             dependencies: [
                 "MaxwellDatabase",
-                .product(name: "SQLite", package: "SQLite.swift")
+                .product(name: "SQLite", package: "SQLite.swift"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
             ]
         ),
         .target(
             name: "MaxwellDatabase",
             dependencies: [
-                .product(name: "SQLite", package: "SQLite.swift")
-            ]
-        ),
-        .testTarget(
-            name: "MaxwellDatabaseTests",
-            dependencies: [
-                "MaxwellDatabase",
                 .product(name: "SQLite", package: "SQLite.swift")
             ]
         ),

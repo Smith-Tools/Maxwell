@@ -2,11 +2,11 @@ import Foundation
 import SQLite3
 
 /// Simple SQLite database for Maxwell documentation
-class SimpleDatabase {
+public class SimpleDatabase {
     private var db: OpaquePointer?
     private let path: String
 
-    init(databasePath: String) throws {
+    public init(databasePath: String) throws {
         self.path = databasePath
         try openDatabase()
         try createTables()
@@ -95,7 +95,7 @@ class SimpleDatabase {
         }
     }
 
-    func insertDocument(
+    public func insertDocument(
         title: String,
         content: String,
         path: String,
@@ -124,15 +124,19 @@ class SimpleDatabase {
 
         defer { sqlite3_finalize(stmt) }
 
-        sqlite3_bind_text(stmt, 1, title, -1, nil)
-        sqlite3_bind_text(stmt, 2, content, -1, nil)
-        sqlite3_bind_text(stmt, 3, path, -1, nil)
-        sqlite3_bind_text(stmt, 4, documentType, -1, nil)
-        sqlite3_bind_text(stmt, 5, category, -1, nil)
-        sqlite3_bind_text(stmt, 6, subcategory, -1, nil)
-        sqlite3_bind_text(stmt, 7, role, -1, nil)
-        sqlite3_bind_text(stmt, 8, enforcementLevel, -1, nil)
-        sqlite3_bind_text(stmt, 9, tagsString, -1, nil)
+        title.withCString { c_title in sqlite3_bind_text(stmt, 1, c_title, -1, nil) }
+        content.withCString { c_content in sqlite3_bind_text(stmt, 2, c_content, -1, nil) }
+        path.withCString { c_path in sqlite3_bind_text(stmt, 3, c_path, -1, nil) }
+        documentType.withCString { c_docType in sqlite3_bind_text(stmt, 4, c_docType, -1, nil) }
+        category.withCString { c_category in sqlite3_bind_text(stmt, 5, c_category, -1, nil) }
+        if let subcategory = subcategory {
+            subcategory.withCString { c_subcat in sqlite3_bind_text(stmt, 6, c_subcat, -1, nil) }
+        } else {
+            sqlite3_bind_null(stmt, 6)
+        }
+        role.withCString { c_role in sqlite3_bind_text(stmt, 7, c_role, -1, nil) }
+        enforcementLevel.withCString { c_enforce in sqlite3_bind_text(stmt, 8, c_enforce, -1, nil) }
+        tagsString.withCString { c_tags in sqlite3_bind_text(stmt, 9, c_tags, -1, nil) }
         sqlite3_bind_int(stmt, 10, Int32(fileSize))
         sqlite3_bind_int(stmt, 11, Int32(lineCount))
 
@@ -141,7 +145,7 @@ class SimpleDatabase {
         }
     }
 
-    func searchDocuments(query: String) throws -> [Document] {
+    public func searchDocuments(query: String) throws -> [Document] {
         let searchSQL = """
             SELECT id, title, content, path, document_type, category, subcategory,
                    role, enforcement_level, tags, file_size, line_count
@@ -174,7 +178,7 @@ class SimpleDatabase {
         return documents
     }
 
-    func getDocumentsByCategory(category: String) throws -> [Document] {
+    public func getDocumentsByCategory(category: String) throws -> [Document] {
         let selectSQL = """
             SELECT id, title, content, path, document_type, category, subcategory,
                    role, enforcement_level, tags, file_size, line_count
@@ -204,7 +208,7 @@ class SimpleDatabase {
 
     // MARK: - Pattern Methods
 
-    func insertPattern(
+    public func insertPattern(
         name: String,
         domain: String,
         problem: String,
@@ -237,7 +241,7 @@ class SimpleDatabase {
         sqlite3_finalize(statement)
     }
 
-    func searchPatterns(query: String) throws -> [Pattern] {
+    public func searchPatterns(query: String) throws -> [Pattern] {
         let searchSQL = """
             SELECT p.* FROM patterns p
             JOIN pattern_search ps ON p.id = ps.rowid
@@ -293,7 +297,7 @@ class SimpleDatabase {
         return patterns
     }
 
-    func getPatternsByDomain(_ domain: String) throws -> [Pattern] {
+    public func getPatternsByDomain(_ domain: String) throws -> [Pattern] {
         let searchSQL = "SELECT * FROM patterns WHERE domain = ? AND is_current = 1 ORDER BY name;"
 
         var statement: OpaquePointer?
@@ -412,7 +416,7 @@ class SimpleDatabase {
         )
     }
 
-    func getStats() -> (total: Int, technical: Int, process: Int) {
+    public func getStats() -> (total: Int, technical: Int, process: Int) {
         let countSQL = "SELECT COUNT(*), document_type FROM documents GROUP BY document_type"
         var stmt: OpaquePointer?
         
@@ -456,30 +460,30 @@ enum DatabaseError: Error {
     }
 }
 
-struct Pattern {
-    let id: Int64
-    let name: String
-    let domain: String
-    let problem: String
-    let solution: String
-    let codeExample: String
-    let createdAt: String
-    let lastValidated: String
-    let isCurrent: Bool
-    let notes: String
+public struct Pattern {
+    public let id: Int64
+    public let name: String
+    public let domain: String
+    public let problem: String
+    public let solution: String
+    public let codeExample: String
+    public let createdAt: String
+    public let lastValidated: String
+    public let isCurrent: Bool
+    public let notes: String
 }
 
-struct Document {
-    let id: Int64
-    let title: String
-    let content: String
-    let path: String
-    let documentType: String
-    let category: String
-    let subcategory: String?
-    let role: String
-    let enforcementLevel: String
-    let tags: [String]
-    let fileSize: Int
-    let lineCount: Int
+public struct Document {
+    public let id: Int64
+    public let title: String
+    public let content: String
+    public let path: String
+    public let documentType: String
+    public let category: String
+    public let subcategory: String?
+    public let role: String
+    public let enforcementLevel: String
+    public let tags: [String]
+    public let fileSize: Int
+    public let lineCount: Int
 }

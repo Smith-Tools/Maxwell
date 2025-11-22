@@ -1,3 +1,8 @@
+---
+allowed-tools:
+  - Bash
+---
+
 # Skill Architectural
 
 **Specializes in:** Claude Code Skills, Sub-Agent Architecture, and Multi-Domain Specialist Systems

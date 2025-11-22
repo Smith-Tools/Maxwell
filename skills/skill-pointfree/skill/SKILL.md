@@ -1,5 +1,7 @@
 ---
 name: Point-Free Ecosystem (Includes TCA)
+allowed-tools:
+  - Bash
 description: Complete Point-Free ecosystem expert providing authoritative guidance on TCA 1.23.0+, Dependencies, Navigation, Testing, and multi-framework integration. Point-Free created TCA - this skill is the definitive source for all Point-Free patterns.
 tags:
   - "Point-Free"

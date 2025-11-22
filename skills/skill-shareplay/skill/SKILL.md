@@ -1,5 +1,7 @@
 ---
 name: maxwell-shareplay
+allowed-tools:
+  - Bash
 description: Specialized expertise for implementing SharePlay and shared experiences on visionOS, including GroupActivities, spatial coordination, and multi-user sessions.
 tags:
   - visionOS

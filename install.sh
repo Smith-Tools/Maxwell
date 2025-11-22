@@ -2,10 +2,10 @@
 
 set -e
 
-echo "🚀 Maxwell Installation (Repository → Local Claude Skills + Database)"
-echo "================================================================="
+echo "🚀 Maxwell Installation (Complete Setup: Binary + Database + Skills)"
+echo "===================================================================="
 echo "📦 Version Controlled: This script lives in the repository root"
-echo "🔧 Deploys: Skills, Agents, Database, and Development Tools"
+echo "🔧 Deploys: Swift CLI Binary, Database, Skills, and Agents"
 echo ""
 
 # Configuration
@@ -22,74 +22,133 @@ if [ ! -d "$MAXWELL_SOURCE" ]; then
     exit 1
 fi
 
+if [ ! -d "$DB_DIR" ]; then
+    echo "❌ Maxwell database directory not found: $DB_DIR"
+    exit 1
+fi
+
 echo "📋 Source validated: $MAXWELL_SOURCE"
 
-# 1. Clean previous installation
-echo "🧹 Cleaning previous installation..."
-rm -rf "$LOCAL_SKILL_DIR/maxwell-pointfree"
-rm -rf "$LOCAL_SKILL_DIR/maxwell-shareplay"
-rm -rf "$LOCAL_SKILL_DIR/maxwell-architect"
-rm -rf "$LOCAL_AGENT_DIR/maxwell-tca"
+# 1. Create directories
+echo "📁 Creating required directories..."
 mkdir -p "$LOCAL_SKILL_DIR"
 mkdir -p "$LOCAL_AGENT_DIR"
 mkdir -p "$LOCAL_BIN_DIR"
 mkdir -p "$LOCAL_DB_DIR"
 
-# 2. Deploy Skills
+# 2. Build Maxwell CLI Binary
+echo "🔨 Building maxwell-cli binary from Swift..."
+cd "$DB_DIR"
+
+if ! swift build --configuration release 2>/dev/null; then
+    echo "❌ Failed to build maxwell-cli binary"
+    exit 1
+fi
+
+# Copy binary to PATH
+BINARY_PATH="$DB_DIR/.build/release/maxwell"
+if [ ! -f "$BINARY_PATH" ]; then
+    echo "❌ Built binary not found at $BINARY_PATH"
+    exit 1
+fi
+
+echo "📦 Installing maxwell binary to $LOCAL_BIN_DIR..."
+cp "$BINARY_PATH" "$LOCAL_BIN_DIR/maxwell"
+chmod +x "$LOCAL_BIN_DIR/maxwell"
+
+# Verify binary is accessible
+if ! command -v maxwell &> /dev/null; then
+    echo "⚠️  maxwell binary not in PATH. Add this to your shell profile:"
+    echo "   export PATH=\"$LOCAL_BIN_DIR:\$PATH\""
+fi
+
+# 3. Initialize and Migrate Database
+echo "🗄️ Setting up Maxwell Database..."
+
+# Initialize database
+DB_PATH="$LOCAL_DB_DIR/maxwell.db"
+echo "   🔨 Initializing database at $DB_PATH..."
+maxwell init
+
+# Run migration to populate patterns from markdown files
+echo "   📚 Migrating markdown patterns into database..."
+SKILLS_DIR="$MAXWELL_SOURCE/skills"
+maxwell migrate "$SKILLS_DIR"
+
+# 4. Deploy Skills
 echo "🏗️ Deploying Maxwell Skills..."
 
 # Deploy Point-Free skill (includes TCA)
-echo "   📦 skill-pointfree (includes TCA authority)..."
+echo "   📦 skill-pointfree (TCA authority)..."
 mkdir -p "$LOCAL_SKILL_DIR/maxwell-pointfree"
-cp -r "$MAXWELL_SOURCE/skills/skill-pointfree/"* "$LOCAL_SKILL_DIR/maxwell-pointfree/"
+rm -rf "$LOCAL_SKILL_DIR/maxwell-pointfree"/*
+cp -r "$MAXWELL_SOURCE/skills/skill-pointfree/"* "$LOCAL_SKILL_DIR/maxwell-pointfree/" 2>/dev/null || true
 
 # Deploy SharePlay skill
 echo "   📦 skill-shareplay..."
 mkdir -p "$LOCAL_SKILL_DIR/maxwell-shareplay"
-cp -r "$MAXWELL_SOURCE/skills/skill-shareplay/"* "$LOCAL_SKILL_DIR/maxwell-shareplay/"
+rm -rf "$LOCAL_SKILL_DIR/maxwell-shareplay"/*
+cp -r "$MAXWELL_SOURCE/skills/skill-shareplay/"* "$LOCAL_SKILL_DIR/maxwell-shareplay/" 2>/dev/null || true
 
 # Deploy Architectural skill
 echo "   📦 skill-architectural..."
 mkdir -p "$LOCAL_SKILL_DIR/maxwell-architectural"
-cp -r "$MAXWELL_SOURCE/skills/skill-architectural/"* "$LOCAL_SKILL_DIR/maxwell-architectural/"
+rm -rf "$LOCAL_SKILL_DIR/maxwell-architectural"/*
+cp -r "$MAXWELL_SOURCE/skills/skill-architectural/"* "$LOCAL_SKILL_DIR/maxwell-architectural/" 2>/dev/null || true
 
-# 3. Deploy Agents
-echo "🤖 Deploying Maxwell Agents..."
+# Deploy Maxwell auto-triggered skill
+echo "   📦 skill-maxwell (auto-triggered router)..."
+mkdir -p "$LOCAL_SKILL_DIR/maxwell"
+rm -rf "$LOCAL_SKILL_DIR/maxwell"/*
+cp -r "$MAXWELL_SOURCE/skills/skill-maxwell/"* "$LOCAL_SKILL_DIR/maxwell/" 2>/dev/null || true
 
-# Deploy TCA agent
-echo "   📦 maxwell-tca agent..."
-mkdir -p "$LOCAL_AGENT_DIR/maxwell-tca"
-cp "$MAXWELL_SOURCE/agent/maxwell-tca.md" "$LOCAL_AGENT_DIR/maxwell-tca/"
+# 5. Deploy Agents
+echo "🤖 Deploying Maxwell Agent..."
 
-# 4. Setup Database
-echo "🗄️ Setting up Maxwell Database..."
+# Deploy Maxwell agent (main coordinator)
+echo "   📦 maxwell (multi-skill coordinator)..."
+mkdir -p "$LOCAL_AGENT_DIR"
+cp "$MAXWELL_SOURCE/agent/maxwell.md" "$LOCAL_AGENT_DIR/maxwell.md"
 
-# Copy database files
-echo "   📋 Copying database schema and tools..."
-cp "$MAXWELL_SOURCE/database/SimpleDatabase.swift" "$LOCAL_DB_DIR/"
-cp "$MAXWELL_SOURCE/database/DatabaseSchema.sql" "$LOCAL_DB_DIR/"
-cp "$MAXWELL_SOURCE/database/HybridKnowledgeRouter.swift" "$LOCAL_DB_DIR/"
-cp "$MAXWELL_SOURCE/database/QueryClassifier.swift" "$LOCAL_DB_DIR/"
+# 6. Verify Installation
+echo ""
+echo "🔍 Verifying installation..."
 
-# Initialize database if it doesn't exist
-DB_PATH="$LOCAL_DB_DIR/maxwell.db"
+if [ ! -f "$LOCAL_BIN_DIR/maxwell" ]; then
+    echo "❌ maxwell binary not found"
+    exit 1
+fi
+
 if [ ! -f "$DB_PATH" ]; then
-    echo "   🔨 Initializing Maxwell database..."
-    cd "$LOCAL_DB_DIR"
-    swift init-db.swift
-else
-    echo "   ✅ Database already exists at $DB_PATH"
+    echo "❌ maxwell.db not found"
+    exit 1
+fi
+
+if [ ! -d "$LOCAL_SKILL_DIR/maxwell" ]; then
+    echo "❌ skill-maxwell not found"
+    exit 1
 fi
 
 echo ""
 echo "🎉 Installation Complete!"
-echo "=================================="
+echo "===================================="
 echo ""
-echo "📚 Local Skills Directory: $LOCAL_SKILL_DIR"
-echo "🤖 Local Agents Directory: $LOCAL_AGENT_DIR"
-echo "🗄️ Database: $LOCAL_DB_DIR/maxwell.db"
+echo "📦 Components Installed:"
+echo "   ✅ maxwell CLI binary: $LOCAL_BIN_DIR/maxwell"
+echo "   ✅ Database: $DB_PATH"
+echo "   ✅ Skills: $LOCAL_SKILL_DIR/"
+echo "   ✅ Agent: $LOCAL_AGENT_DIR/maxwell.md"
+echo ""
+echo "📊 Database Status:"
+maxwell domain TCA 2>/dev/null | head -3 || echo "   (Database patterns will appear here after next run)"
 echo ""
 echo "💡 Next Steps:"
-echo "   1. Test skills: Ask Claude about TCA, SharePlay, or Maxwell architecture"
-echo "   2. Add patterns: Use database tools to expand knowledge"
-echo "   3. Create new specialists: Follow skill-pointfree pattern"
+echo "   1. Verify binary: maxwell search \"TCA @Shared\""
+echo "   2. Test with Claude: Ask about TCA or SharePlay"
+echo "   3. Maxwell skills will auto-trigger on framework keywords"
+echo "   4. Maxwell agent is available for complex multi-domain questions"
+echo ""
+echo "🔗 Quick Commands:"
+echo "   maxwell search \"pattern query\"                    # Search all patterns"
+echo "   maxwell domain TCA                                  # List TCA patterns"
+echo "   maxwell pattern \"Pattern Name\"                    # Find specific pattern"
