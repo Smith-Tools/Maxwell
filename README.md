@@ -11,13 +11,17 @@
 Maxwell follows a consistent **Agent + Skill + Validation** architecture for each specialization:
 
 ```
-maxwell-module/
-├── agent/                    # Specialized AI agent
-│   └── maxwell-{module}.md  # Agent behavior and capabilities
-├── skill/                    # Knowledge base
-│   ├── SKILL.md             # Main skill documentation
-│   ├── guides/              # Implementation guides
-│   ├── examples/            # Real-world patterns
+maxwell/
+├── skills/                   # All expertise modules
+│   ├── skill-tca/           # The Composable Architecture expertise
+│   ├── skill-shareplay/     # SharePlay & spatial experiences
+│   ├── skill-pointfree/     # Point-Free ecosystem integration
+│   └── skill-maxwell/       # Core routing & coordination
+├── TCA/                     # TCA-specific tools & validation
+├── SharePlay/               # SharePlay-specific resources
+├── PointFree/               # Point-Free integration layer
+├── database/                # SQLite knowledge storage
+└── _development/            # Implementation guides & research
 │   ├── references/          # Documentation and research
 │   ├── snippets/            # Code templates
 │   └── resources/           # Additional resources
