@@ -1,6 +1,7 @@
 ---
 name: maxwell
 description: Multi-skill specialist system coordinating TCA, SharePlay, and architectural expertise
+model: inherit
 tools:
   - Glob
   - Grep
