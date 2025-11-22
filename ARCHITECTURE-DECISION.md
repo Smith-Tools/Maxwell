@@ -93,7 +93,7 @@ The current siloed approach **cannot answer these questions**.
 ```
 ┌─────────────────────────────────────────┐
 │         Unified Knowledge Layer         │
-│  (SQLite + FTS5 - extends sosumi)       │
+│  (SQLite + FTS5 - coordinates with sosumi)  │
 │                                         │
 │  Tables:                                │
 │  - patterns (domain-specific)           │
@@ -115,7 +115,7 @@ The current siloed approach **cannot answer these questions**.
 - Enables cross-domain for complex problems (20% of queries)
 - Single knowledge source: no duplication
 - Flexible: scales to new domains
-- Proven pattern: extends sosumi's successful SQLite+FTS5 approach
+- Proven pattern: SQLite+FTS5 approach with sosumi coordination
 
 **Cons:**
 - Two entry points (skill vs. subagent)
@@ -183,7 +183,7 @@ CREATE TABLE discoveries (
     discovered_date TEXT
 );
 
--- Full-text search index (extends sosumi pattern)
+-- Full-text search index (FTS5 implementation)
 CREATE VIRTUAL TABLE maxwell_search USING fts5(
     pattern_name, problem, solution, code_example,
     domain, integration_pattern, content=patterns, content_rowid=id
@@ -241,9 +241,9 @@ Each domain has a skill that:
 **Maxwell** (framework expertise):
 - Purpose: How do I combine these frameworks in production?
 - Knowledge source: Patterns, integrations, real-world discoveries
-- Infrastructure: Extends sosumi's SQLite + FTS5
+- Infrastructure: SQLite + FTS5 with sosumi coordination
 
-**Maxwell uses sosumi's infrastructure as a foundation** and extends it with cross-domain search capabilities.
+**Maxwell coordinates with sosumi** through a HybridKnowledgeRouter that combines framework expertise with official Apple documentation.
 
 ---
 

@@ -1,49 +1,47 @@
 # Maxwell - Framework Expertise & Cross-Domain Integration System
 
-**Maxwell** is a knowledge and expertise system for helping developers and AI agents navigate complex, multi-framework Apple development. Rather than storing expertise in siloed skills, Maxwell provides a unified knowledge layer that enables both auto-triggered quick answers and comprehensive cross-domain problem solving.
+**Maxwell** is a knowledge and expertise system for helping developers and AI agents navigate complex, multi-framework Apple development. Maxwell provides both auto-triggered skills for quick answers and a hybrid knowledge router that coordinates with sosumi for comprehensive coverage.
 
-> **Core Insight**: Maxwell's value is the knowledge content (90+ patterns, integrations, and discoveries), not the architecture. The system is organizational scaffolding that keeps expertise accessible and maintainable.
+> **Core Insight**: Maxwell's value is its knowledge content (63 Swift implementation files and extensive framework expertise), not the architecture. The system provides practical patterns and real-world solutions for modern Apple development.
 
 **For the architectural decision and rationale, see [`ARCHITECTURE-DECISION.md`](ARCHITECTURE-DECISION.md)** - especially if you're wondering "why Maxwell instead of upgrading Smith?" or "why not consolidate everything?"
 
 ## Architecture Overview
 
-Maxwell follows a consistent **Agent + Skill + Validation** architecture for each specialization:
+Maxwell follows a **Hybrid Knowledge Routing** architecture that combines multiple expertise sources:
 
 ```
 maxwell/
-├── skills/                   # All expertise modules
+├── skills/                   # Specialized expertise modules
 │   ├── skill-tca/           # The Composable Architecture expertise
 │   ├── skill-shareplay/     # SharePlay & spatial experiences
 │   ├── skill-pointfree/     # Point-Free ecosystem integration
 │   └── skill-maxwell/       # Core routing & coordination
+├── database/                # SQLite knowledge storage & routing
+│   ├── SimpleDatabase.swift # Core SQLite implementation (63 Swift files)
+│   ├── HybridKnowledgeRouter.swift # Coordinates with sosumi
+│   ├── MaxwellEvolutionWorkflow.swift # Progressive response system
+│   └── [Additional Swift implementation files]
 ├── TCA/                     # TCA-specific tools & validation
 ├── SharePlay/               # SharePlay-specific resources
 ├── PointFree/               # Point-Free integration layer
-├── database/                # SQLite knowledge storage
 └── _development/            # Implementation guides & research
-│   ├── references/          # Documentation and research
-│   ├── snippets/            # Code templates
-│   └── resources/           # Additional resources
-├── validation/               # Architecture enforcement rules
-│   └── *.smith              # Smith validation rulesets
-├── _development/            # Development and research content
-└── README.md                # Module-specific documentation
 ```
 
-## The Unified Knowledge Layer
+## The Hybrid Knowledge System
 
-Maxwell uses a shared SQLite database (extending sosumi's proven pattern) with four critical tables:
+Maxwell implements a **HybridKnowledgeRouter** that coordinates between:
 
-1. **patterns**: Domain-specific patterns (TCA, SharePlay, RealityKit, etc.)
-2. **integrations**: Cross-domain bridges (TCA + SharePlay, RealityKit + TCA, etc.)
-3. **anti_patterns**: Common bugs with root causes and fixes
-4. **discoveries**: Real-world bugs and solutions from production apps
+1. **Maxwell Database**: SQLite-based framework expertise and patterns
+2. **sosumi**: Apple official documentation search
+3. **Knowledge Gap Detection**: Identifies missing information and fills gaps
+4. **Progressive Response System**: Provides different levels of detail based on need
 
-This unified layer enables:
-- **Skills** (auto-triggered) to answer single-domain questions fast
-- **Subagent** (explicit) to answer cross-domain questions with code analysis
-- Both accessing the same knowledge source (no duplication)
+The system includes:
+- **Auto-triggered skills** for domain-specific questions (TCA, SharePlay, Point-Free)
+- **Hybrid routing** to combine Maxwell's patterns with sosumi's official docs
+- **Gap detection** to ensure comprehensive coverage
+- **Synthesized responses** that integrate multiple knowledge sources
 
 ### Why This Matters
 
@@ -60,27 +58,50 @@ This is a cross-domain question. The unified knowledge layer makes it answerable
 
 ## Available Modules
 
-### SharePlay Module
+### SharePlay Module (`skill-shareplay`)
 **Specialization**: Apple's GroupActivities framework and shared experiences
 
+- **Complete implementation guidance**: 50+ documentation files with real-world patterns
 - **Cross-platform support**: iOS, iPadOS, macOS, visionOS
-- **40+ documentation files**: Complete implementation guidance
-- **Production-ready patterns**: Based on real-world apps like GreenSpurt
-- **HIG compliance**: Apple Human Interface Guidelines validation
+- **Production-ready examples**: Based on actual implementation experience
+- **HIG compliance**: Apple Human Interface Guidelines integration
 - **Spatial computing**: VisionOS-specific patterns and features
+- **Code snippets**: Advanced concurrency patterns, session detection, error recovery
 
-**Usage**: `skill: "maxwell-shareplay"` or agent delegation for SharePlay implementation
+**Usage**: `skill: "maxwell-shareplay"` - Auto-triggered on SharePlay keywords
 
-### TCA Module
-**Specialization**: The Composable Architecture (TCA) 1.23.0+ for Swift development
+### TCA Module (`skill-tca`)
+**Specialization**: The Composable Architecture (TCA) for Swift development
 
-- **Modern Swift 6.2+ patterns**: Strict concurrency and latest APIs
-- **Anti-pattern detection**: Common mistakes and migration paths
+- **Modern Swift patterns**: Latest TCA APIs and best practices
+- **Anti-pattern detection**: Common mistakes with solutions and migration paths
+- **Validation rules**: Swift files for architectural enforcement
+- **Testing integration**: Comprehensive testing strategies and examples
 - **Decision trees**: Architectural guidance for state management
-- **Testing integration**: Swift Testing framework support
-- **Performance optimization**: Type inference and dependency injection
+- **Performance optimization**: Type inference and dependency injection patterns
 
-**Usage**: `skill: "maxwell-tca"` or agent delegation for TCA architecture
+**Usage**: `skill: "maxwell-tca"` - Auto-triggered on TCA keywords
+
+### Point-Free Module (`skill-pointfree`)
+**Specialization**: Point-Free ecosystem coordination and integration
+
+- **Multi-framework coordination**: TCA, Dependencies, Navigation, Testing
+- **Decision trees**: Framework selection and integration patterns
+- **Integration patterns**: Full-stack examples and delegation protocols
+- **Framework detection**: Automatic routing to appropriate specialists
+- **Anti-pattern validation**: Cross-framework architectural rules
+
+**Usage**: `skill: "pointfree"` - Multi-framework coordination expertise
+
+### Maxwell Core (`skill-maxwell`)
+**Specialization**: Framework expertise routing and cross-domain coordination
+
+- **Multi-framework expertise**: TCA, SharePlay, RealityKit integration patterns
+- **Auto-triggering**: Intelligent keyword detection and routing
+- **Cross-domain recommendations**: When to escalate to comprehensive analysis
+- **Knowledge synthesis**: Combines multiple expertise areas
+
+**Usage**: `skill: "maxwell"` - Core routing and framework expertise
 
 ## Development Workflow
 
@@ -168,11 +189,24 @@ New modules should follow the established architecture:
 
 ## Development Status
 
-- ✅ **SharePlay Module**: Complete with 40+ documentation files
-- ✅ **TCA Module**: Complete with modern Swift 6.2+ patterns
-- 🔄 **RealityKit Module**: Framework in progress
-- 🔄 **Swift Module**: Framework in progress
-- 🔄 **SwiftUI Module**: Framework in progress
+### ✅ Completed & Deployed
+- **SharePlay Module**: Complete with 50+ documentation files, code snippets, and implementation guides
+- **TCA Module**: Complete with modern Swift patterns, validation rules, and anti-pattern detection
+- **Point-Free Module**: Multi-framework coordination expertise with decision trees
+- **Maxwell Core**: Framework routing and cross-domain coordination
+- **Database Implementation**: SQLite-based knowledge storage with 63 Swift implementation files
+- **Hybrid Knowledge Router**: Coordination with sosumi for comprehensive coverage
+
+### 🔄 Core Infrastructure
+- **SimpleDatabase**: SQLite implementation with FTS5 search
+- **HybridKnowledgeRouter**: Intelligent routing between Maxwell and sosumi
+- **Progressive Response System**: Context-aware response levels
+- **Knowledge Gap Detection**: Automatic identification and resolution of coverage gaps
+
+### 📋 Available for Extension
+- **RealityKit Module**: Placeholder exists, ready for spatial computing patterns
+- **Swift Module**: Placeholder exists, ready for language-level expertise
+- **SwiftUI Module**: Placeholder exists, ready for UI framework patterns
 
 ## License
 
