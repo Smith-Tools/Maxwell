@@ -62,3 +62,22 @@ yarn-error.log*
 *.bak
 *.backup
 *.orig
+
+# Swift Package Manager specific
+Package.resolved
+.build/
+
+# Database files
+*.db
+maxwell*.db
+
+# Compiled binaries
+MaxwellMigrator
+
+# Response and demo files
+database_response_simulation.txt
+maxwell_agent_response.md
+maxwell_agent_sheet_response.md
+maxwell_agent_visionos_response.md
+HYBRID_AGENT_DEMO.md
+KNOWLEDGE_GAP_RESOLUTION_DEMO.md
