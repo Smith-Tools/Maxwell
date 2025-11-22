@@ -146,10 +146,26 @@ Each domain has a skill that:
 ### 3. Simple Database: Pattern Storage
 
 **SQLite Implementation**:
-- `SimpleDatabase.swift` - FTS5-enabled document search
-- Stores framework patterns and expertise
-- Fast lookup for skill responses
-- Clean, maintainable schema
+- `SimpleDatabase.swift` - SQLite with pattern and search tables
+- Stores extracted patterns (not raw documentation)
+- Fast pattern lookup for skill responses
+- Simple, maintainable schema focused on patterns only
+
+### 4. Canonical Source References
+
+**Markdown-Based Source Management**:
+- `canonical-sources.md` files in each skill directory
+- Tables pointing to authoritative documentation
+- Manual verification of source availability
+- Human-maintained lists of trusted sources
+
+### 5. Manual Update Philosophy
+
+**Pattern-First Workflow**:
+- Manual pattern extraction from official docs
+- Event-driven updates when patterns become stale
+- Freshness tracking through validation timestamps
+- Human validation ensures pattern correctness
 
 ---
 

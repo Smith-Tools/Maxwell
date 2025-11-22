@@ -50,9 +50,29 @@ Subagent analyzes code + Maxwell patterns + sosumi (when needed)
 ```
 
 **sosumi Integration:**
-- **Maxwell skills**: Framework patterns and expertise
+- **Maxwell patterns**: Extracted patterns and curated expertise
 - **Maxwell subagents**: Can call sosumi for official Apple documentation
 - **Standard agent pattern**: Like any expert agent, Maxwell subagents use sosumi when needed
+
+## Maxwell's Pattern-First Philosophy
+
+### What Maxwell Does
+- ✅ **Extracts patterns** from official documentation (TCA, SharePlay, Point-Free)
+- ✅ **Curates expertise** by identifying meaningful, reusable patterns
+- ✅ **Points to canonical sources** for always-current documentation
+- ✅ **Maintains freshness** through manual validation and event-driven updates
+
+### What Maxwell Doesn't Do
+- ❌ **Ingest raw documentation** (sosumi handles this perfectly)
+- ❌ **Auto-detect changes** in unstructured content (complex and error-prone)
+- ❌ **Maintain document copies** (creates maintenance burden)
+- ❌ **Compete with sosumi** (different purposes, different strengths)
+
+### The Manual Update Philosophy
+- **Event-driven**: Update patterns when problems are discovered or TCA versions change
+- **Human validation**: Manual review ensures pattern correctness and relevance
+- **Freshness tracking**: Timestamps help identify when patterns need review
+- **Sustainable maintenance**: Focused updates rather than automatic synchronization
 
 ### Why This Matters
 
@@ -201,17 +221,18 @@ New modules should follow the established architecture:
 ## Development Status
 
 ### ✅ Completed & Deployed
-- **SharePlay Module**: Complete with 50+ documentation files, code snippets, and implementation guides
-- **TCA Module**: Complete with modern Swift patterns, validation rules, and anti-pattern detection
-- **Point-Free Module**: Multi-framework coordination expertise with decision trees
-- **Maxwell Core**: Framework routing skill and subagents
-- **Database Implementation**: SQLite-based knowledge storage with FTS5 search
+- **SharePlay Module**: Implementation guides with canonical source references
+- **TCA Module**: Pattern storage with searchable SQLite database
+- **Point-Free Module**: Multi-framework coordination expertise
+- **Maxwell Core**: Pattern-only skill with manual update philosophy
+- **Database Implementation**: SQLite pattern storage (not documentation ingestion)
 
-### 🔄 Core Infrastructure
-- **SimpleDatabase**: SQLite implementation with FTS5 search
-- **Maxwell Skill**: Auto-triggered pattern lookup and routing
-- **Maxwell Subagents**: Expert agents with file access and sosumi integration
-- **Swift Package**: Ready for deployment and integration
+### 🔄 Core Architecture
+- **Pattern-First Philosophy**: Maxwell extracts and curates patterns, not raw docs
+- **Canonical Source References**: Markdown tables pointing to authoritative documentation
+- **SQLite Pattern Database**: Simple, searchable pattern storage
+- **Manual Update Workflow**: Event-driven pattern updates when needed
+- **Freshness Tracking**: Manual validation timestamps for pattern health
 
 ### 📋 Available for Extension
 - **RealityKit Module**: Placeholder exists, ready for spatial computing patterns

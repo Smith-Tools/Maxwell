@@ -52,13 +52,46 @@ class SimpleDatabase {
             );
         """
 
+        let createPatternsTable = """
+            CREATE TABLE IF NOT EXISTS patterns (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE NOT NULL,
+                domain TEXT NOT NULL,
+                problem TEXT NOT NULL,
+                solution TEXT NOT NULL,
+                code_example TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                last_validated DATETIME,
+                is_current BOOLEAN DEFAULT 1,
+                notes TEXT
+            );
+        """
+
+        let createPatternSearchTable = """
+            CREATE VIRTUAL TABLE IF NOT EXISTS pattern_search USING fts5(
+                name,
+                problem,
+                solution,
+                code_example
+            );
+        """
+
         if sqlite3_exec(db, createDocumentsTable, nil, nil, nil) != SQLITE_OK {
+            throw DatabaseError.tableCreationError
+        }
+
+        if sqlite3_exec(db, createPatternsTable, nil, nil, nil) != SQLITE_OK {
             throw DatabaseError.tableCreationError
         }
 
         if sqlite3_exec(db, createSearchTable, nil, nil, nil) != SQLITE_OK {
             // FTS5 might not be available, continue without it
             print("Warning: FTS5 not available, search functionality limited")
+        }
+
+        if sqlite3_exec(db, createPatternSearchTable, nil, nil, nil) != SQLITE_OK {
+            // FTS5 might not be available, continue without it
+            print("Warning: Pattern FTS5 not available, pattern search functionality limited")
         }
     }
 
@@ -169,6 +202,164 @@ class SimpleDatabase {
         return documents
     }
 
+    // MARK: - Pattern Methods
+
+    func insertPattern(
+        name: String,
+        domain: String,
+        problem: String,
+        solution: String,
+        codeExample: String,
+        notes: String = ""
+    ) throws {
+        let insertSQL = """
+            INSERT INTO patterns (name, domain, problem, solution, code_example, notes)
+            VALUES (?, ?, ?, ?, ?, ?);
+        """
+
+        var statement: OpaquePointer?
+
+        if sqlite3_prepare_v2(db, insertSQL, -1, &statement, nil) != SQLITE_OK {
+            throw DatabaseError.preparationError
+        }
+
+        sqlite3_bind_text(statement, 1, name, -1, nil)
+        sqlite3_bind_text(statement, 2, domain, -1, nil)
+        sqlite3_bind_text(statement, 3, problem, -1, nil)
+        sqlite3_bind_text(statement, 4, solution, -1, nil)
+        sqlite3_bind_text(statement, 5, codeExample, -1, nil)
+        sqlite3_bind_text(statement, 6, notes, -1, nil)
+
+        if sqlite3_step(statement) != SQLITE_DONE {
+            throw DatabaseError.insertionError
+        }
+
+        sqlite3_finalize(statement)
+    }
+
+    func searchPatterns(query: String) throws -> [Pattern] {
+        let searchSQL = """
+            SELECT p.* FROM patterns p
+            JOIN pattern_search ps ON p.id = ps.rowid
+            WHERE pattern_search MATCH ?;
+        """
+
+        var statement: OpaquePointer?
+        var patterns: [Pattern] = []
+
+        if sqlite3_prepare_v2(db, searchSQL, -1, &statement, nil) != SQLITE_OK {
+            // Fallback to basic search without FTS5
+            return try basicPatternSearch(query: query)
+        }
+
+        sqlite3_bind_text(statement, 1, query, -1, nil)
+
+        while sqlite3_step(statement) == SQLITE_ROW {
+            if let pattern = createPatternFromStatement(statement) {
+                patterns.append(pattern)
+            }
+        }
+
+        sqlite3_finalize(statement)
+        return patterns
+    }
+
+    private func basicPatternSearch(query: String) throws -> [Pattern] {
+        let searchSQL = """
+            SELECT * FROM patterns
+            WHERE name LIKE ? OR domain LIKE ? OR problem LIKE ? OR solution LIKE ?;
+        """
+
+        var statement: OpaquePointer?
+        var patterns: [Pattern] = []
+        let searchPattern = "%\(query)%"
+
+        if sqlite3_prepare_v2(db, searchSQL, -1, &statement, nil) != SQLITE_OK {
+            throw DatabaseError.preparationError
+        }
+
+        sqlite3_bind_text(statement, 1, searchPattern, -1, nil)
+        sqlite3_bind_text(statement, 2, searchPattern, -1, nil)
+        sqlite3_bind_text(statement, 3, searchPattern, -1, nil)
+        sqlite3_bind_text(statement, 4, searchPattern, -1, nil)
+
+        while sqlite3_step(statement) == SQLITE_ROW {
+            if let pattern = createPatternFromStatement(statement) {
+                patterns.append(pattern)
+            }
+        }
+
+        sqlite3_finalize(statement)
+        return patterns
+    }
+
+    func getPatternsByDomain(_ domain: String) throws -> [Pattern] {
+        let searchSQL = "SELECT * FROM patterns WHERE domain = ? AND is_current = 1 ORDER BY name;"
+
+        var statement: OpaquePointer?
+        var patterns: [Pattern] = []
+
+        if sqlite3_prepare_v2(db, searchSQL, -1, &statement, nil) != SQLITE_OK {
+            throw DatabaseError.preparationError
+        }
+
+        sqlite3_bind_text(statement, 1, domain, -1, nil)
+
+        while sqlite3_step(statement) == SQLITE_ROW {
+            if let pattern = createPatternFromStatement(statement) {
+                patterns.append(pattern)
+            }
+        }
+
+        sqlite3_finalize(statement)
+        return patterns
+    }
+
+    private func createPatternFromStatement(_ stmt: OpaquePointer?) -> Pattern? {
+        guard let stmt = stmt else { return nil }
+
+        let id = sqlite3_column_int64(stmt, 0)
+
+        let nameCString = sqlite3_column_text(stmt, 1)
+        let name = nameCString != nil ? String(cString: nameCString!) : ""
+
+        let domainCString = sqlite3_column_text(stmt, 2)
+        let domain = domainCString != nil ? String(cString: domainCString!) : ""
+
+        let problemCString = sqlite3_column_text(stmt, 3)
+        let problem = problemCString != nil ? String(cString: problemCString!) : ""
+
+        let solutionCString = sqlite3_column_text(stmt, 4)
+        let solution = solutionCString != nil ? String(cString: solutionCString!) : ""
+
+        let codeCString = sqlite3_column_text(stmt, 5)
+        let codeExample = codeCString != nil ? String(cString: codeCString!) : ""
+
+        let createdCString = sqlite3_column_text(stmt, 6)
+        let createdAt = createdCString != nil ? String(cString: createdCString!) : ""
+
+        let validatedCString = sqlite3_column_text(stmt, 7)
+        let lastValidated = validatedCString != nil ? String(cString: validatedCString!) : ""
+
+        let isCurrent = sqlite3_column_int(stmt, 8) == 1
+
+        let notesCString = sqlite3_column_text(stmt, 9)
+        let notes = notesCString != nil ? String(cString: notesCString!) : ""
+
+        return Pattern(
+            id: id,
+            name: name,
+            domain: domain,
+            problem: problem,
+            solution: solution,
+            codeExample: codeExample,
+            createdAt: createdAt,
+            lastValidated: lastValidated,
+            isCurrent: isCurrent,
+            notes: notes
+        )
+    }
+
     private func createDocumentFromStatement(_ stmt: OpaquePointer?) -> Document? {
         guard let stmt = stmt else { return nil }
 
@@ -263,6 +454,19 @@ enum DatabaseError: Error {
         case .insertionError: return "Failed to insert data"
         }
     }
+}
+
+struct Pattern {
+    let id: Int64
+    let name: String
+    let domain: String
+    let problem: String
+    let solution: String
+    let codeExample: String
+    let createdAt: String
+    let lastValidated: String
+    let isCurrent: Bool
+    let notes: String
 }
 
 struct Document {
