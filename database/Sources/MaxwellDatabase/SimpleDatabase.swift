@@ -124,19 +124,19 @@ public class SimpleDatabase {
 
         defer { sqlite3_finalize(stmt) }
 
-        title.withCString { c_title in sqlite3_bind_text(stmt, 1, c_title, -1, nil) }
-        content.withCString { c_content in sqlite3_bind_text(stmt, 2, c_content, -1, nil) }
-        path.withCString { c_path in sqlite3_bind_text(stmt, 3, c_path, -1, nil) }
-        documentType.withCString { c_docType in sqlite3_bind_text(stmt, 4, c_docType, -1, nil) }
-        category.withCString { c_category in sqlite3_bind_text(stmt, 5, c_category, -1, nil) }
+        sqlite3_bind_text(stmt, 1, (title as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(stmt, 2, (content as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(stmt, 3, (path as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(stmt, 4, (documentType as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(stmt, 5, (category as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
         if let subcategory = subcategory {
-            subcategory.withCString { c_subcat in sqlite3_bind_text(stmt, 6, c_subcat, -1, nil) }
+            sqlite3_bind_text(stmt, 6, (subcategory as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
         } else {
             sqlite3_bind_null(stmt, 6)
         }
-        role.withCString { c_role in sqlite3_bind_text(stmt, 7, c_role, -1, nil) }
-        enforcementLevel.withCString { c_enforce in sqlite3_bind_text(stmt, 8, c_enforce, -1, nil) }
-        tagsString.withCString { c_tags in sqlite3_bind_text(stmt, 9, c_tags, -1, nil) }
+        sqlite3_bind_text(stmt, 7, (role as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(stmt, 8, (enforcementLevel as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(stmt, 9, (tagsString as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
         sqlite3_bind_int(stmt, 10, Int32(fileSize))
         sqlite3_bind_int(stmt, 11, Int32(lineCount))
 
@@ -164,9 +164,9 @@ public class SimpleDatabase {
 
         defer { sqlite3_finalize(stmt) }
 
-        sqlite3_bind_text(stmt, 1, searchPattern, -1, nil)
-        sqlite3_bind_text(stmt, 2, searchPattern, -1, nil)
-        sqlite3_bind_text(stmt, 3, searchPattern, -1, nil)
+        sqlite3_bind_text(stmt, 1, (searchPattern as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(stmt, 2, (searchPattern as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(stmt, 3, (searchPattern as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
 
         var documents: [Document] = []
         while sqlite3_step(stmt) == SQLITE_ROW {
@@ -194,7 +194,7 @@ public class SimpleDatabase {
 
         defer { sqlite3_finalize(stmt) }
 
-        sqlite3_bind_text(stmt, 1, category, -1, nil)
+        sqlite3_bind_text(stmt, 1, (category as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
 
         var documents: [Document] = []
         while sqlite3_step(stmt) == SQLITE_ROW {
@@ -227,12 +227,12 @@ public class SimpleDatabase {
             throw DatabaseError.preparationError
         }
 
-        sqlite3_bind_text(statement, 1, name, -1, nil)
-        sqlite3_bind_text(statement, 2, domain, -1, nil)
-        sqlite3_bind_text(statement, 3, problem, -1, nil)
-        sqlite3_bind_text(statement, 4, solution, -1, nil)
-        sqlite3_bind_text(statement, 5, codeExample, -1, nil)
-        sqlite3_bind_text(statement, 6, notes, -1, nil)
+        sqlite3_bind_text(statement, 1, (name as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(statement, 2, (domain as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(statement, 3, (problem as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(statement, 4, (solution as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(statement, 5, (codeExample as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(statement, 6, (notes as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
 
         if sqlite3_step(statement) != SQLITE_DONE {
             throw DatabaseError.insertionError
@@ -256,7 +256,7 @@ public class SimpleDatabase {
             return try basicPatternSearch(query: query)
         }
 
-        sqlite3_bind_text(statement, 1, query, -1, nil)
+        sqlite3_bind_text(statement, 1, (query as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
 
         while sqlite3_step(statement) == SQLITE_ROW {
             if let pattern = createPatternFromStatement(statement) {
@@ -282,10 +282,10 @@ public class SimpleDatabase {
             throw DatabaseError.preparationError
         }
 
-        sqlite3_bind_text(statement, 1, searchPattern, -1, nil)
-        sqlite3_bind_text(statement, 2, searchPattern, -1, nil)
-        sqlite3_bind_text(statement, 3, searchPattern, -1, nil)
-        sqlite3_bind_text(statement, 4, searchPattern, -1, nil)
+        sqlite3_bind_text(statement, 1, (searchPattern as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(statement, 2, (searchPattern as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(statement, 3, (searchPattern as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
+        sqlite3_bind_text(statement, 4, (searchPattern as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
 
         while sqlite3_step(statement) == SQLITE_ROW {
             if let pattern = createPatternFromStatement(statement) {
@@ -307,7 +307,7 @@ public class SimpleDatabase {
             throw DatabaseError.preparationError
         }
 
-        sqlite3_bind_text(statement, 1, domain, -1, nil)
+        sqlite3_bind_text(statement, 1, (domain as NSString).utf8String, -1, unsafeBitCast(Int(-1), to: sqlite3_destructor_type.self))
 
         while sqlite3_step(statement) == SQLITE_ROW {
             if let pattern = createPatternFromStatement(statement) {
