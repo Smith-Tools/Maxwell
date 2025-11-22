@@ -17,31 +17,42 @@ maxwell/
 │   ├── skill-shareplay/     # SharePlay & spatial experiences
 │   ├── skill-pointfree/     # Point-Free ecosystem integration
 │   └── skill-maxwell/       # Core routing & coordination
-├── database/                # SQLite knowledge storage & routing
-│   ├── SimpleDatabase.swift # Core SQLite implementation (63 Swift files)
-│   ├── HybridKnowledgeRouter.swift # Coordinates with sosumi
-│   ├── MaxwellEvolutionWorkflow.swift # Progressive response system
-│   └── [Additional Swift implementation files]
+├── database/                # SQLite knowledge storage
+│   ├── SimpleDatabase.swift # Core SQLite implementation
+│   ├── SimpleMigrator.swift # Database migration tools
+│   └── Package.swift        # Swift package configuration
 ├── TCA/                     # TCA-specific tools & validation
 ├── SharePlay/               # SharePlay-specific resources
 ├── PointFree/               # Point-Free integration layer
 └── _development/            # Implementation guides & research
 ```
 
-## The Hybrid Knowledge System
+## The Simple Architecture
 
-Maxwell implements a **HybridKnowledgeRouter** that coordinates between:
+Maxwell follows a clean **Skill + Subagent** architecture:
 
-1. **Maxwell Database**: SQLite-based framework expertise and patterns
-2. **sosumi**: Apple official documentation search
-3. **Knowledge Gap Detection**: Identifies missing information and fills gaps
-4. **Progressive Response System**: Provides different levels of detail based on need
+1. **Maxwell Skills** (auto-triggered): Quick pattern lookup from SQLite database
+2. **Maxwell Subagents** (explicit): Deep expertise with file access and sosumi integration
 
-The system includes:
-- **Auto-triggered skills** for domain-specific questions (TCA, SharePlay, Point-Free)
-- **Hybrid routing** to combine Maxwell's patterns with sosumi's official docs
-- **Gap detection** to ensure comprehensive coverage
-- **Synthesized responses** that integrate multiple knowledge sources
+**Simple Workflow:**
+```
+Developer Question
+    ↓
+Auto-trigger: maxwell skill (keywords: @Shared, SharePlay, etc.)
+    ↓
+Simple question?
+  ✅ → Return pattern from Maxwell DB (2 seconds)
+  ❌ → Recommend explicit subagent invocation
+    ↓
+Task("maxwell-tca", ...) or Task("maxwell-shareplay", ...)
+    ↓
+Subagent analyzes code + Maxwell patterns + sosumi (when needed)
+```
+
+**sosumi Integration:**
+- **Maxwell skills**: Framework patterns and expertise
+- **Maxwell subagents**: Can call sosumi for official Apple documentation
+- **Standard agent pattern**: Like any expert agent, Maxwell subagents use sosumi when needed
 
 ### Why This Matters
 
@@ -193,15 +204,14 @@ New modules should follow the established architecture:
 - **SharePlay Module**: Complete with 50+ documentation files, code snippets, and implementation guides
 - **TCA Module**: Complete with modern Swift patterns, validation rules, and anti-pattern detection
 - **Point-Free Module**: Multi-framework coordination expertise with decision trees
-- **Maxwell Core**: Framework routing and cross-domain coordination
-- **Database Implementation**: SQLite-based knowledge storage with 63 Swift implementation files
-- **Hybrid Knowledge Router**: Coordination with sosumi for comprehensive coverage
+- **Maxwell Core**: Framework routing skill and subagents
+- **Database Implementation**: SQLite-based knowledge storage with FTS5 search
 
 ### 🔄 Core Infrastructure
 - **SimpleDatabase**: SQLite implementation with FTS5 search
-- **HybridKnowledgeRouter**: Intelligent routing between Maxwell and sosumi
-- **Progressive Response System**: Context-aware response levels
-- **Knowledge Gap Detection**: Automatic identification and resolution of coverage gaps
+- **Maxwell Skill**: Auto-triggered pattern lookup and routing
+- **Maxwell Subagents**: Expert agents with file access and sosumi integration
+- **Swift Package**: Ready for deployment and integration
 
 ### 📋 Available for Extension
 - **RealityKit Module**: Placeholder exists, ready for spatial computing patterns

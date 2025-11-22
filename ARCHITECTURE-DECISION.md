@@ -87,131 +87,69 @@ The current siloed approach **cannot answer these questions**.
 
 ---
 
-### 3. Parallel Architecture (CHOSEN)
-**Proposal**: Keep skills (auto-triggered) and subagent (explicit) both querying unified knowledge layer
+### 3. Simple Skill + Subagent Architecture (CHOSEN)
+**Proposal**: Skills (auto-triggered) for quick patterns, Subagents (explicit) for deep analysis
 
 ```
-┌─────────────────────────────────────────┐
-│         Unified Knowledge Layer         │
-│  (SQLite + FTS5 - coordinates with sosumi)  │
-│                                         │
-│  Tables:                                │
-│  - patterns (domain-specific)           │
-│  - integrations (cross-domain bridges)  │
-│  - anti_patterns (symptom → fix)        │
-│  - discoveries (real bugs + solutions)  │
-└─────────────────────────────────────────┘
-         ↑              ↑
-    Skills (auto)    Subagent (explicit)
-    - TCA skill      - maxwell-unified
-    - SharePlay      - can read code files
-    - RealityKit     - orchestrates skills
-    (single-domain)  (cross-domain)
-    (fast)           (comprehensive)
+Developer Question
+        ↓
+Auto-trigger: maxwell skill (keywords: @Shared, SharePlay, etc.)
+        ↓
+Simple question?
+  ✅ → Return pattern from Maxwell DB (2 seconds)
+  ❌ → Recommend explicit subagent invocation
+        ↓
+Task("maxwell-tca", ...) or Task("maxwell-shareplay", ...)
+        ↓
+Subagent analyzes code + Maxwell patterns + sosumi (when needed)
 ```
 
 **Pros:**
-- Keeps auto-triggering for quick questions (80% of queries)
-- Enables cross-domain for complex problems (20% of queries)
-- Single knowledge source: no duplication
-- Flexible: scales to new domains
-- Proven pattern: SQLite+FTS5 approach with sosumi coordination
+- Clean separation of concerns
+- Fast responses for simple questions (2 seconds)
+- Deep analysis capability when needed
+- Standard agent pattern (familiar to users)
+- Simple to implement and maintain
 
 **Cons:**
 - Two entry points (skill vs. subagent)
-- Requires clear routing logic
+- Requires clear escalation criteria
 
-**Decision**: Approved.
+**Decision**: Approved and implemented.
 
 ---
 
-## The Architecture
+## The Implementation
 
-### 1. Knowledge Layer: Unified SQLite Database
-
-**Pattern**: Extends sosumi's proven SQLite + FTS5 infrastructure
-
-**Schema**:
-```sql
--- Domain-specific patterns
-CREATE TABLE patterns (
-    id INTEGER PRIMARY KEY,
-    domain TEXT,              -- 'TCA', 'SharePlay', 'RealityKit'
-    pattern_name TEXT,
-    problem TEXT,             -- What problem does this solve?
-    solution TEXT,            -- How to solve it
-    code_example TEXT,        -- Swift code
-    references TEXT,          -- Links to source material
-    validation_checklist TEXT,
-    UNIQUE(domain, pattern_name)
-);
-
--- Cross-domain integration patterns (CRITICAL)
-CREATE TABLE integrations (
-    id INTEGER PRIMARY KEY,
-    domain_a TEXT,            -- 'TCA'
-    domain_b TEXT,            -- 'SharePlay'
-    integration_pattern TEXT, -- 'TCA-SharePlay State Bridge'
-    problem TEXT,
-    solution TEXT,
-    code_example TEXT,
-    tradeoffs TEXT,           -- Why this approach vs alternatives
-    UNIQUE(domain_a, domain_b, integration_pattern)
-);
-
--- Anti-patterns and debugging
-CREATE TABLE anti_patterns (
-    id INTEGER PRIMARY KEY,
-    domain TEXT,
-    symptom TEXT,             -- What the developer sees
-    root_cause TEXT,          -- Why it happens
-    fix TEXT,                 -- How to fix it
-    discovery_source TEXT,    -- Where we learned this
-    example_code TEXT
-);
-
--- Real-world discoveries and bug fixes
-CREATE TABLE discoveries (
-    id INTEGER PRIMARY KEY,
-    title TEXT,
-    domains TEXT,             -- JSON array: ['TCA', 'SharePlay']
-    symptom TEXT,
-    investigation TEXT,
-    solution TEXT,
-    code_fix TEXT,
-    validation_status TEXT,
-    discovered_date TEXT
-);
-
--- Full-text search index (FTS5 implementation)
-CREATE VIRTUAL TABLE maxwell_search USING fts5(
-    pattern_name, problem, solution, code_example,
-    domain, integration_pattern, content=patterns, content_rowid=id
-);
-```
-
-### 2. Skills Layer: Auto-Triggered Knowledge Access
+### 1. Skills Layer: Auto-Triggered Pattern Access
 
 Each domain has a skill that:
 - Triggers automatically on keywords (@Shared, SharePlay, etc.)
-- Queries the unified DB for single-domain patterns
-- Returns fast, focused answers
-- Detects cross-domain problems and recommends subagent escalation
+- Returns fast, focused answers from domain expertise
+- Detects complex problems and recommends subagent escalation
 
 **Current Skills**:
 - `maxwell-tca` - TCA patterns and anti-patterns
 - `maxwell-shareplay` - SharePlay GroupActivities patterns
-- (Future) `maxwell-realitykit` - RealityKit and spatial computing
-- (Future) `maxwell-swiftui` - SwiftUI and platform-specific patterns
+- `maxwell-pointfree` - Point-Free ecosystem coordination
+- `maxwell` - Core routing and framework expertise
 
-### 3. Subagent Layer: Cross-Domain Problem Solving
+### 2. Subagent Layer: Deep Analysis & Code Access
 
-**maxwell-unified** subagent:
-- Explicit invocation (via Task tool)
-- Can read actual project code
-- Queries integration patterns in DB
-- Orchestrates multiple skills as needed
+**Maxwell Subagents**:
+- Explicit invocation via `Task(subagent_type: "maxwell-tca", ...)`
+- Can read actual project code and provide specific guidance
+- Access to Maxwell's framework expertise and patterns
+- Can call sosumi when Apple documentation is needed
 - Provides architectural guidance across domains
+
+### 3. Simple Database: Pattern Storage
+
+**SQLite Implementation**:
+- `SimpleDatabase.swift` - FTS5-enabled document search
+- Stores framework patterns and expertise
+- Fast lookup for skill responses
+- Clean, maintainable schema
 
 ---
 
@@ -243,7 +181,7 @@ Each domain has a skill that:
 - Knowledge source: Patterns, integrations, real-world discoveries
 - Infrastructure: SQLite + FTS5 with sosumi coordination
 
-**Maxwell coordinates with sosumi** through a HybridKnowledgeRouter that combines framework expertise with official Apple documentation.
+**Maxwell subagents coordinate with sosumi** like any expert agent - calling sosumi when Apple documentation is needed to supplement framework expertise.
 
 ---
 
