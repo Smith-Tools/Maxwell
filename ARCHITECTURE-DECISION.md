@@ -87,33 +87,36 @@ The current siloed approach **cannot answer these questions**.
 
 ---
 
-### 3. Simple Skill + Subagent Architecture (CHOSEN)
-**Proposal**: Skills (auto-triggered) for quick patterns, Subagents (explicit) for deep analysis
+### 3. Unified Multi-Skill + Agent Architecture (CHOSEN)
+**Proposal**: Auto-triggered skills for fast answers, single Maxwell agent for complex analysis
 
 ```
 Developer Question
         ↓
-Auto-trigger: maxwell skill (keywords: @Shared, SharePlay, etc.)
+Route by keywords (auto-triggered)
         ↓
-Simple question?
-  ✅ → Return pattern from Maxwell DB (2 seconds)
-  ❌ → Recommend explicit subagent invocation
-        ↓
-Task("maxwell-tca", ...) or Task("maxwell-shareplay", ...)
-        ↓
-Subagent analyzes code + Maxwell patterns + sosumi (when needed)
+Simple pattern lookup?
+  ✅ → skill-pointfree/shareplay/meta answers (2 seconds)
+       - Calls: maxwell search "query"
+       - Returns relevant patterns from database
+  ❌ → Complex multi-domain question?
+       → Maxwell agent (`@maxwell`) analyzes (30 seconds)
+       - Reads code files
+       - Queries maxwell database
+       - Synthesizes cross-domain solutions
 ```
 
 **Pros:**
-- Clean separation of concerns
-- Fast responses for simple questions (2 seconds)
-- Deep analysis capability when needed
-- Standard agent pattern (familiar to users)
-- Simple to implement and maintain
+- Fast auto-triggered responses for simple questions (2 seconds)
+- One comprehensive agent for complex questions
+- Real CLI binary backend (not fake infrastructure)
+- Type-safe database queries (SQLite.swift)
+- Markdown-first content (version controlled)
+- Zero unsafe code, clear separation of concerns
 
 **Cons:**
-- Two entry points (skill vs. subagent)
-- Requires clear escalation criteria
+- Requires explicit `@maxwell` invocation for complex questions
+- Single agent can't specialize like separate subagents could
 
 **Decision**: Approved and implemented.
 
@@ -121,51 +124,65 @@ Subagent analyzes code + Maxwell patterns + sosumi (when needed)
 
 ## The Implementation
 
-### 1. Skills Layer: Auto-Triggered Pattern Access
+### 1. Auto-Triggered Skills Layer
 
-Each domain has a skill that:
-- Triggers automatically on keywords (@Shared, SharePlay, etc.)
-- Returns fast, focused answers from domain expertise
-- Detects complex problems and recommends subagent escalation
+Three specialized skills trigger automatically on keywords:
 
-**Current Skills**:
-- `maxwell-tca` - TCA patterns and anti-patterns
-- `maxwell-shareplay` - SharePlay GroupActivities patterns
-- `maxwell-pointfree` - Point-Free ecosystem coordination
-- `maxwell` - Core routing and framework expertise
+**skill-pointfree** (TCA authority):
+- Triggers on: `@Shared`, `@Bindable`, `Reducer`, `TestStore`, `TCA`
+- Accesses: `maxwell search "@Shared" --domain TCA`
+- Returns: TCA patterns and best practices in ~2 seconds
 
-### 2. Subagent Layer: Deep Analysis & Code Access
+**skill-shareplay** (SharePlay expert):
+- Triggers on: `SharePlay`, `GroupActivities`, `collaborative`
+- Accesses: `maxwell search "GroupActivities"`
+- Returns: SharePlay implementation patterns in ~2 seconds
 
-**Maxwell Subagents**:
-- Explicit invocation via `Task(subagent_type: "maxwell-tca", ...)`
-- Can read actual project code and provide specific guidance
-- Access to Maxwell's framework expertise and patterns
-- Can call sosumi when Apple documentation is needed
-- Provides architectural guidance across domains
+**skill-meta** (Maxwell's self-knowledge):
+- Triggers on: `Maxwell`, `architecture`, `patterns`, `skills`
+- Provides: Maxwell system documentation
+- Returns: Architecture guidance in ~2 seconds
 
-### 3. Simple Database: Pattern Storage
+### 2. Maxwell Agent Layer
 
-**SQLite Implementation**:
-- `SimpleDatabase.swift` - SQLite with pattern and search tables
-- Stores extracted patterns (not raw documentation)
-- Fast pattern lookup for skill responses
-- Simple, maintainable schema focused on patterns only
+**Unified Maxwell Agent** (`@maxwell` explicit invocation):
+- Comprehensive multi-domain expertise
+- Can read project code and files
+- Queries maxwell database via CLI
+- Synthesizes complex cross-domain solutions
+- Orchestrates insight from all domains
 
-### 4. Canonical Source References
+### 3. Real CLI Binary Backend
 
-**Markdown-Based Source Management**:
-- `canonical-sources.md` files in each skill directory
-- Tables pointing to authoritative documentation
-- Manual verification of source availability
-- Human-maintained lists of trusted sources
+**maxwell command-line tool**:
+- Built with Swift ArgumentParser
+- Provides 5 subcommands:
+  - `maxwell search "query" [--domain] [--limit]` - Full-text search
+  - `maxwell pattern "name"` - Find by name
+  - `maxwell domain TCA|SharePlay` - List domain patterns
+  - `maxwell init` - Initialize database
+  - `maxwell migrate /path` - Migrate markdown files
+- Binary path: `~/.local/bin/maxwell`
+- Location: `database/Sources/MaxwellCLI/main.swift`
 
-### 5. Manual Update Philosophy
+### 4. SQLite Database
 
-**Pattern-First Workflow**:
-- Manual pattern extraction from official docs
-- Event-driven updates when patterns become stale
-- Freshness tracking through validation timestamps
-- Human validation ensures pattern correctness
+**Type-Safe Database Layer**:
+- Uses SQLite.swift library (compile-time checked queries)
+- Zero unsafe code
+- Proper null handling for optional fields
+- Two tables:
+  - `documents` (70 markdown files, 153 total with metadata)
+  - `patterns` (prepared for structured pattern data)
+- Location: `~/.claude/resources/databases/maxwell.db`
+
+### 5. Markdown-First Content
+
+**Version-Controlled Content**:
+- All patterns stored as markdown in skill directories
+- Migration process extracts metadata and populates database
+- Content is human-maintained, not auto-generated
+- Easy to review changes in git
 
 ---
 
@@ -173,8 +190,9 @@ Each domain has a skill that:
 
 **Smith** (validation tool):
 - Purpose: Is this code architecturally correct?
-- What it checks: Reducer composition, testability, access control, concurrency safety
+- What it checks: TCA patterns, reducer composition, testability, access control
 - When it runs: After implementation, as a quality gate
+- Example: Smith detects @Shared race conditions
 
 **Maxwell** (expertise tool):
 - Purpose: How should I implement this cross-domain feature?

@@ -6,48 +6,87 @@ You've just encountered Maxwell. Here's what it is and where to start.
 
 ## 30-Second Summary
 
-**Maxwell** helps developers build complex, multi-framework Apple apps by providing:
+**Maxwell** is a production-ready multi-skill specialist system that helps developers build complex, multi-framework Apple apps.
 
-1. **Auto-triggered skills** that answer single-domain questions fast (TCA? SharePlay? RealityKit?)
-2. **A unified knowledge layer** (SQLite database) that connects frameworks together
-3. **A cross-domain subagent** for answering questions like "How do I sync RealityKit with TCA+SharePlay?"
+It provides:
+1. **Auto-triggered skills** that answer single-domain questions fast (TCA? SharePlay?)
+2. **A unified knowledge layer** (SQLite database with 150+ documents)
+3. **A Maxwell orchestrator agent** for complex multi-domain questions
 
-**Key insight**: Maxwell's value is its knowledge content (90+ patterns and integrations), not the architecture.
+**Key insight**: Maxwell uses a real Swift CLI binary backed by SQLite. Skills call `maxwell search` to access patterns.
+
+---
+
+## Quick Start
+
+### Installation
+
+```bash
+cd /Volumes/Plutonian/_Developer/Smith\ Tools/Maxwell
+./install.sh
+```
+
+This builds the maxwell binary, initializes the database, and deploys skills.
+
+### Testing
+
+```bash
+# Verify binary works
+maxwell search "TCA @Shared"
+
+# Ask Maxwell a question in Claude
+# Keywords will auto-trigger appropriate skills
+```
 
 ---
 
 ## Who Are You?
 
-### "I'm building an Apple app and have a question"
+### "I'm building an Apple app and have a quick question"
 
-→ **Use Maxwell skills**: Describe your problem, keywords will auto-trigger the right skill
+→ **Just ask**: Keywords will auto-trigger the right skill
 
-Example:
-- "How do I use @Shared in TCA?" → `maxwell-tca` skill auto-triggers
-- "How do I implement SharePlay?" → `maxwell-shareplay` skill auto-triggers
-- "How do I sync RealityKit across SharePlay?" → Complex question → `maxwell-unified` subagent
+Examples:
+- "How do I use @Shared in TCA?" → skill-pointfree auto-triggers
+- "How do I implement SharePlay?" → skill-shareplay auto-triggers
+- "What's the difference between @Shared patterns?" → skill-pointfree with database query
+
+**Speed**: ~2 seconds for auto-triggered skill response
+
+### "I have complex code that needs review or optimization"
+
+→ **Use Maxwell agent**: `@maxwell`
+
+Examples:
+- "Review this TCA reducer for performance"
+- "How do I integrate this TCA state with SharePlay?"
+- "What patterns should I apply here?"
+
+**Speed**: ~30 seconds for comprehensive analysis
 
 ### "I'm trying to understand Maxwell's architecture"
 
 → **Read [`ARCHITECTURE-DECISION.md`](ARCHITECTURE-DECISION.md)**
 
 This explains:
-- Why Maxwell exists (solves real cross-domain problems)
-- Why it's separate from Smith validation
-- Why parallel skills + subagent matters
-- What the unified knowledge layer is
+- Why Maxwell exists
+- The 4-tier architecture (Entry Points → Skills → CLI → Database)
+- How skills and agent coordinate
+- Design principles and trade-offs
 
-**3 minutes to understand, 15 minutes to fully appreciate.**
+**Time**: 10 minutes to fully understand
 
-### "I want to add patterns or discoveries to Maxwell"
+### "I want to add patterns or extend Maxwell"
 
 → **Read [`KNOWLEDGE-MAINTENANCE.md`](KNOWLEDGE-MAINTENANCE.md)**
 
 This explains:
-- What goes in each table (patterns, integrations, anti-patterns, discoveries)
-- When to add new content
-- How to search existing knowledge
-- Maintenance cadence and common tasks
+- How to add new markdown files to skill directories
+- How to run `maxwell migrate` to populate database
+- How the CLI binary works
+- Extending with new skills
+
+**Time**: 15 minutes to understand the workflow
 
 ### "I'm an AI agent working on Maxwell"
 
