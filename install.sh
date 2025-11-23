@@ -63,6 +63,12 @@ rm -rf "$LOCAL_SKILL_DIR/maxwell-shareplay" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/maxwell-swift" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/maxwell-visionos" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/maxwell-meta" 2>/dev/null || true
+# Remove old skill-* prefixed versions
+rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-tca" 2>/dev/null || true
+rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-architecture" 2>/dev/null || true
+rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-shareplay" 2>/dev/null || true
+rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-visionos" 2>/dev/null || true
+rm -rf "$LOCAL_SKILL_DIR/pointfree-documentation" 2>/dev/null || true
 rm -rf "$LOCAL_AGENT_DIR/maxwell" 2>/dev/null || true
 
 # 3. Deploy Maxwell Agent Orchestrator
