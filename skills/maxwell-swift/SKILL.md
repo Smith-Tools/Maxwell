@@ -33,7 +33,7 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-  - Write
+
   - Bash
 version: "3.0.0"
 author: "Claude Code Skill - Maxwell Architecture"

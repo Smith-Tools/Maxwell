@@ -354,6 +354,161 @@ triggers:
 - Version management for updates
 - Growth: Designed for expansion
 
+## Maxwell Discoveries: Practical Lessons from Multi-Skill Implementation
+
+### The Tool Access Control Discovery
+
+#### **The Problem**
+When building Maxwell v3.0 (a multi-skill system with embedded knowledge), individual skills were configured with both local file tools (Read, Glob, Grep) AND web tools (WebSearch, WebFetch).
+
+**Observed Behavior**: Skills would prefer to use WebFetch/WebSearch rather than read embedded knowledge files, even when the knowledge was available locally. This defeated the purpose of having embedded knowledge.
+
+#### **Root Cause Analysis**
+Claude agents/skills optimize for:
+1. **Minimal effort**: Generating answers from training data is easier than reading files
+2. **Freshness**: Web searches provide current information vs. embedded knowledge that might be outdated
+3. **Speed**: Web API calls can be faster than file I/O in some cases
+
+**Key Insight**: When given a choice between multiple tools, Claude will naturally prefer web search over local file operations, regardless of instructions in the SKILL.md file.
+
+#### **The Solution: Tool Restriction Pattern**
+**Critical Discovery**: The way to force skills to use embedded knowledge is to **restrict `allowed-tools` to ONLY local file tools**.
+
+```yaml
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+```
+
+**Why This Works**:
+- Skills cannot use tools that aren't listed in `allowed-tools`
+- Without WebFetch/WebSearch available, the skill MUST read local files
+- Forces actual utilization of embedded knowledge
+- Verifiable through "tool uses" count (should be > 0)
+
+### The Agent Preloading Discovery
+
+#### **How Agent-Skill Coordination Actually Works**
+After extensive testing, we discovered the actual mechanism:
+
+**NOT This** (what we initially expected):
+```yaml
+# Agents do NOT dynamically call/invoke skills
+Agent:
+  - Invoke skill-pointfree
+  - Invoke skill-shareplay
+  - Synthesize responses
+```
+
+**Actually This** (what Claude implements):
+```yaml
+# Agents have skills PRELOADED in their context
+Agent:
+  skills: skill1,skill2,skill3
+  # All skill knowledge is loaded into agent context at startup
+  # Agent references preloaded knowledge directly
+  # No runtime invocation needed
+```
+
+#### **Zero Tool Uses Is Expected for Agents**
+When testing the Maxwell agent with `skills:` field:
+- Agent shows `0 tool uses` despite coordinating multiple skills
+- This is **correct behavior**, not a failure
+- Skills are preloaded in agent context
+- Agent has immediate access to all skill knowledge
+- No need to call Read/Glob/Grep - knowledge is already there
+
+#### **Verification Pattern**
+To confirm agent-skill coordination is working:
+1. Ask a question requiring multiple domains
+2. Check if response synthesizes content from multiple domains
+3. If synthesis is sophisticated, the agent is coordinating
+4. Zero tool uses doesn't mean failure - it means knowledge was preloaded
+
+### The Relative Paths Discovery
+
+#### **File Reference Pattern**
+From official Claude documentation:
+
+**NOT Recommended** (absolute paths):
+```markdown
+See [documentation](/Users/elkraneo/.claude/skills/maxwell-pointfree/knowledge/TCA-SHARED-STATE.md)
+```
+
+**Correct Approach** (relative paths):
+```markdown
+See [TCA patterns](knowledge/guides/TCA-SHARED-STATE.md)
+```
+
+#### **Why Relative Paths Matter**
+- Claude expects relative paths from skill directory
+- Progressive disclosure: files loaded contextually as needed
+- Works with Claude's file loading mechanism
+- Portable across different installations
+- Tested and verified with Maxwell implementation
+
+### Multi-Skill Architecture Proven Pattern
+
+#### **Working Maxwell v3.0 Architecture**
+
+**Individual Skills:**
+```yaml
+allowed-tools: Read,Glob,Grep  # Local files ONLY
+knowledge/: 28+ files per skill
+triggers: Domain-specific keywords
+auto-trigger: Yes, on keyword match
+result: Reads embedded knowledge files (verified by > 0 tool uses)
+```
+
+**Orchestrator Agent:**
+```yaml
+skills: maxwell-pointfree,maxwell-shareplay,maxwell-visionos,maxwell-meta,maxwell-swift
+allowed-tools: Glob,Grep,Read,WebSearch,WebFetch  # Local + web fallback
+context: All skill knowledge preloaded at startup
+result: Synthesizes across domains (0 tool uses is normal)
+```
+
+#### **The Workflow**
+1. User asks single-domain question → Skill auto-triggers with embedded knowledge
+2. User asks multi-domain question → Agent references preloaded skill knowledge
+3. Knowledge gap detected → Agent falls back to WebSearch
+4. Result: Always provides answer (local first, web second)
+
+### Critical Implementation Checklist
+
+#### **For Skills to Work Correctly**
+- [ ] Use `allowed-tools: Read,Glob,Grep` ONLY (no WebSearch/WebFetch)
+- [ ] Reference knowledge files with relative paths: `knowledge/guides/FILE.md`
+- [ ] Include direct markdown links to knowledge files in SKILL.md
+- [ ] Strip all detailed knowledge descriptions from SKILL.md
+- [ ] Minimal skill definition: metadata + tool instructions only
+- [ ] Verify with test: expect > 0 tool uses on single-domain question
+
+#### **For Agent to Work Correctly**
+- [ ] Include `skills: skill1,skill2,skill3` field in YAML frontmatter
+- [ ] Give agent access to web tools (WebSearch, WebFetch) as fallback
+- [ ] Expect `0 tool uses` - this is normal when skills preloaded
+- [ ] Verify by asking multi-domain question
+- [ ] Check response synthesizes across domains
+
+### Lessons for Future Multi-Skill Systems
+
+#### **Tool Access Is Behavioral Control**
+Skills don't read instructions to use local files. They choose the easiest path. **Tool restrictions are the mechanism for forcing desired behavior**, not instructions.
+
+#### **Skill Knowledge Must Not Be In SKILL.md**
+Any detailed knowledge in the SKILL.md itself becomes implicit knowledge the skill can use without reading files. Keep SKILL.md minimal:
+- Metadata (name, description, triggers)
+- Configuration (allowed-tools)
+- File references to knowledge
+
+#### **Agents Need Preloading, Not Invocation**
+The `skills:` field in agent YAML preloads skill knowledge into agent context. This is fundamentally different from dynamically calling skills. Design orchestration with this model in mind.
+
+#### **Zero Tool Uses for Agents Is Correct**
+When an agent uses preloaded skills, it won't show tool uses. This is expected. Verify success by analyzing response quality and domain synthesis, not by tool use count.
+
 ### Future Agent Development Guidance
 
 #### **Architecture Alignment**
