@@ -41,10 +41,10 @@ deploy: build
 	mkdir -p "$(LOCAL_SKILL_DIR)/maxwell-shareplay"
 	cp -r "$(MAXWELL_SOURCE)/skills/skill-shareplay/"* "$(LOCAL_SKILL_DIR)/maxwell-shareplay/"
 
-	# Deploy Architectural skill
-	@echo "   📦 skill-architectural (Maxwell's own patterns and meta-knowledge)"
-	mkdir -p "$(LOCAL_SKILL_DIR)/maxwell-architectural"
-	cp -r "$(MAXWELL_SOURCE)/skills/skill-architectural/"* "$(LOCAL_SKILL_DIR)/maxwell-architectural/"
+	# Deploy Meta skill
+	@echo "   📦 skill-meta (Maxwell's own meta-knowledge and system patterns)"
+	mkdir -p "$(LOCAL_SKILL_DIR)/maxwell-meta"
+	cp -r "$(MAXWELL_SOURCE)/skills/skill-meta/"* "$(LOCAL_SKILL_DIR)/maxwell-meta/"
 
 	@echo "   ✅ Skills deployed: $$(find $(LOCAL_SKILL_DIR) -name "maxwell-*" -type d | wc -l | awk '{print $$1}') skills"
 
@@ -102,11 +102,11 @@ test:
 	@echo "   🧪 Testing skill integrity..."
 	@echo "      Testing skill-pointfree structure..."
 	@[ -d "$(LOCAL_SKILL_DIR)/maxwell-pointfree" ] && echo "   ✅ skill-pointfree structure valid"
-	@[ -f "$(LOCAL_SKILL_DIR)/maxwell-pointfree/SKILL.md" ] && echo "   ✅ skill-pointfree manifest valid"
+	@[ -f "$(LOCAL_SKILL_DIR)/maxwell-pointfree/skill/SKILL.md" ] && echo "   ✅ skill-pointfree manifest valid"
 	@[ -d "$(LOCAL_SKILL_DIR)/maxwell-shareplay" ] && echo "   ✅ skill-shareplay structure valid"
-	@[ -f "$(LOCAL_SKILL_DIR)/maxwell-shareplay/SKILL.md" ] && echo "   ✅ skill-shareplay manifest valid"
-	@[ -d "$(LOCAL_SKILL_DIR)/maxwell-architectural" ] && echo "   ✅ skill-architectural structure valid"
-	@[ -f "$(LOCAL_SKILL_DIR)/maxwell-architectural/SKILL.md" ] && echo "   ✅ skill-architectural manifest valid"
+	@[ -f "$(LOCAL_SKILL_DIR)/maxwell-shareplay/skill/SKILL.md" ] && echo "   ✅ skill-shareplay manifest valid"
+	@[ -d "$(LOCAL_SKILL_DIR)/maxwell-meta" ] && echo "   ✅ skill-meta structure valid"
+	@[ -f "$(LOCAL_SKILL_DIR)/maxwell-meta/skill/SKILL.md" ] && echo "   ✅ skill-meta manifest valid"
 	@echo "   ✅ All skill structures valid"
 	@echo ""
 	@echo "   🧪 Testing agent integrity..."
@@ -114,12 +114,7 @@ test:
 	@echo "   ✅ All agent structures valid"
 	@echo ""
 	@echo "   🧪 Testing database connectivity..."
-	@cd "$(LOCAL_DB_DIR)"
-	@if [ -f "maxwell.db" ]; then
-		sqlite3 maxwell.db "SELECT COUNT(*) as total_docs FROM documents;" >/dev/null && echo "   ✅ Database connectivity working" || echo "   ⚠️ Database connectivity issue"
-	else
-		echo "   ❌ Database not found"
-	fi
+	@cd "$(LOCAL_DB_DIR)" && if [ -f "maxwell.db" ]; then sqlite3 maxwell.db "SELECT COUNT(*) as total_docs FROM documents;" >/dev/null && echo "   ✅ Database connectivity working" || echo "   ⚠️ Database connectivity issue"; else echo "   ❌ Database not found"; fi
 	@echo ""
 	@echo "🎉 All tests passed!"
 

@@ -3,15 +3,15 @@ allowed-tools:
   - Bash
 ---
 
-# Skill Architectural
+# Skill Meta
 
-**Specializes in:** Claude Code Skills, Sub-Agent Architecture, and Multi-Domain Specialist Systems
+**Specializes in:** Maxwell System Architecture, Setup Patterns, and Multi-Skill Coordination
 
-> **Domain Expertise:** Maxwell's own architectural patterns and real-world development practice
+> **Domain Expertise:** Meta-knowledge about the Maxwell system itself - setup, configuration, and orchestration patterns
 
 ## When to Use This Skill
 
-Use this architectural skill when:
+Use this meta skill when:
 - Designing multi-skill specialist systems
 - Deciding between skills vs sub-agents
 - Understanding Claude Code composition patterns

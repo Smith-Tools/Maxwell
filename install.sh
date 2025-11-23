@@ -46,7 +46,7 @@ if ! swift build --configuration release 2>/dev/null; then
 fi
 
 # Copy binary to PATH
-BINARY_PATH="$DB_DIR/.build/release/maxwell"
+BINARY_PATH="$DB_DIR/.build/release/Maxwell"
 if [ ! -f "$BINARY_PATH" ]; then
     echo "❌ Built binary not found at $BINARY_PATH"
     exit 1
@@ -62,18 +62,21 @@ if ! command -v maxwell &> /dev/null; then
     echo "   export PATH=\"$LOCAL_BIN_DIR:\$PATH\""
 fi
 
-# 3. Initialize and Migrate Database
+# 3. Deploy Database
 echo "🗄️ Setting up Maxwell Database..."
 
-# Initialize database
+# Copy version-controlled database
 DB_PATH="$LOCAL_DB_DIR/maxwell.db"
-echo "   🔨 Initializing database at $DB_PATH..."
-maxwell init
+echo "   📋 Copying version-controlled database to $DB_PATH..."
+cp "$MAXWELL_SOURCE/database/maxwell.db" "$DB_PATH"
 
-# Run migration to populate patterns from markdown files
-echo "   📚 Migrating markdown patterns into database..."
-SKILLS_DIR="$MAXWELL_SOURCE/skills"
-maxwell migrate "$SKILLS_DIR"
+# Verify database integrity
+echo "   🔍 Verifying database integrity..."
+DOC_COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM documents;" 2>/dev/null || echo "0")
+if [ "$DOC_COUNT" -eq 0 ]; then
+    echo "   ⚠️ Database appears empty, initializing..."
+    cd "$DB_DIR" && maxwell init
+fi
 
 # 4. Deploy Skills
 echo "🏗️ Deploying Maxwell Skills..."
@@ -90,17 +93,11 @@ mkdir -p "$LOCAL_SKILL_DIR/maxwell-shareplay"
 rm -rf "$LOCAL_SKILL_DIR/maxwell-shareplay"/*
 cp -r "$MAXWELL_SOURCE/skills/skill-shareplay/"* "$LOCAL_SKILL_DIR/maxwell-shareplay/" 2>/dev/null || true
 
-# Deploy Architectural skill
-echo "   📦 skill-architectural..."
-mkdir -p "$LOCAL_SKILL_DIR/maxwell-architectural"
-rm -rf "$LOCAL_SKILL_DIR/maxwell-architectural"/*
-cp -r "$MAXWELL_SOURCE/skills/skill-architectural/"* "$LOCAL_SKILL_DIR/maxwell-architectural/" 2>/dev/null || true
-
-# Deploy Maxwell auto-triggered skill
-echo "   📦 skill-maxwell (auto-triggered router)..."
-mkdir -p "$LOCAL_SKILL_DIR/maxwell"
-rm -rf "$LOCAL_SKILL_DIR/maxwell"/*
-cp -r "$MAXWELL_SOURCE/skills/skill-maxwell/"* "$LOCAL_SKILL_DIR/maxwell/" 2>/dev/null || true
+# Deploy Meta skill
+echo "   📦 skill-meta (Maxwell's own meta-knowledge)..."
+mkdir -p "$LOCAL_SKILL_DIR/maxwell-meta"
+rm -rf "$LOCAL_SKILL_DIR/maxwell-meta"/*
+cp -r "$MAXWELL_SOURCE/skills/skill-meta/"* "$LOCAL_SKILL_DIR/maxwell-meta/" 2>/dev/null || true
 
 # 5. Deploy Agents
 echo "🤖 Deploying Maxwell Agent..."
@@ -124,8 +121,8 @@ if [ ! -f "$DB_PATH" ]; then
     exit 1
 fi
 
-if [ ! -d "$LOCAL_SKILL_DIR/maxwell" ]; then
-    echo "❌ skill-maxwell not found"
+if [ ! -d "$LOCAL_SKILL_DIR/maxwell-meta" ]; then
+    echo "❌ skill-meta not found"
     exit 1
 fi
 
