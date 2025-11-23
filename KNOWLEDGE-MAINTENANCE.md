@@ -4,16 +4,14 @@ This guide explains how to extend Maxwell's knowledge base with new patterns and
 
 ---
 
-## Current System: Markdown-First Approach
+## Current System: Database-as-Source-of-Truth
 
-Maxwell uses a **simple, elegant design**:
+Maxwell uses a **simple, storage-focused design**:
 
 ```
-Markdown Files (Version-Controlled)
+Content (imported once)
     ↓
-maxwell migrate command
-    ↓
-SQLite documents table
+SQLite documents table (73 documents, 327 KB)
     ↓
 maxwell search queries
     ↓
@@ -21,32 +19,33 @@ Skills get results via CLI
 ```
 
 **Why this works:**
-- Source of truth is markdown files in git (easy to review, version-controlled)
-- Migration extracts metadata automatically
-- SQLite provides fast search
+- Database IS the source of truth (not markdown files)
+- Content imported once via `maxwell migrate`, then markdown files deleted
+- SQLite provides fast full-text search (3ms average)
 - CLI binary is single access point
-- No complex schema management
-- No data duplication between git and database
+- No schema complexity - one flexible `documents` table
+- No data duplication or sync issues
+- Database snapshot version-controlled in git
 
 **Database Location**: `~/.claude/resources/databases/maxwell.db`
+**Current Content**: 73 documents across 5 categories (SharePlay, Point-Free, Architecture, Claude Code, General)
 
 ---
 
-## How to Add Content to Maxwell
+## How to Extend Maxwell's Knowledge
 
-### Step 1: Create Markdown Files
+### Current State
 
-Add `.md` files to skill directories:
+The database already contains 73 documents indexed and searchable. The markdown source files have been deleted (since database is the source of truth).
 
-```
-skills/skill-pointfree/skill/guides/pattern-name.md
-skills/skill-shareplay/skill/guides/feature-guide.md
-skills/skill-meta/skill/architecture-guide.md
-```
+To add NEW content in the future:
 
-File format - just plain markdown:
+### Step 1: Create Markdown Files (Temporary)
+
+Create `.md` files in a temporary location (not in the repository):
+
 ```markdown
-# Pattern Name
+# New Pattern Name
 
 ## Problem
 What problem does this solve?
@@ -65,26 +64,41 @@ Real working code.
 ### Step 2: Migrate to Database
 
 ```bash
-maxwell migrate /Volumes/Plutonian/_Developer/Smith\ Tools/Maxwell/skills
+# Create temporary directory with your markdown files
+mkdir /tmp/new-content
+# ... add your .md files ...
+
+# Migrate to the installed database
+maxwell migrate /tmp/new-content
 ```
 
 This:
 - Finds all `.md` files recursively
 - Extracts `# Title` as document title
-- Infers domain from directory path (skill-pointfree → TCA, skill-shareplay → SharePlay)
-- Extracts tags from filename and path
-- Inserts into `documents` table with full metadata
+- Infers domain from content or metadata
+- Extracts tags from filename
+- Inserts into `documents` table with metadata
 
-### Step 3: Query Results
-
-Skills and agents access via CLI:
+### Step 3: Verify in Database
 
 ```bash
-maxwell search "Reducer composition"                   # Search all
-maxwell search "@Shared" --domain TCA                  # Search domain
-maxwell domain SharePlay                               # List domain docs
-maxwell pattern "TCA @Shared Single Owner"             # Find by name
+# Search for your new content
+maxwell search "your-pattern-name"
+
+# Query database to verify
+sqlite3 ~/.claude/resources/databases/maxwell.db \
+  "SELECT title, category FROM documents WHERE title LIKE '%new%';"
 ```
+
+### Step 4: Delete Temporary Markdown Files
+
+Once in the database, the markdown files are no longer needed:
+
+```bash
+rm -rf /tmp/new-content
+```
+
+The database IS the permanent storage now.
 
 ---
 
@@ -316,33 +330,34 @@ maxwell --help
 
 ## Design Principles
 
-**Markdown-First**: All content is markdown files in git. Database is a cached, searchable index.
+**Database-as-Source-of-Truth**: The SQLite database IS the permanent storage. Content is imported once, markdown files deleted. No redundancy.
 
-**Simple Schema**: One `documents` table for current needs. No complex pattern/integration/discovery tables. Overengineering avoided.
+**Simple Schema**: One `documents` table stores all content as flexible blobs. No complex pattern/integration/discovery tables. Simple = sustainable.
 
-**CLI-Driven**: Maxwell binary is the single source of truth for all queries. No direct database access from skills.
+**CLI-Driven**: Maxwell binary is the single query interface. No direct database access from skills. All queries go through `maxwell search`.
 
-**Type-Safe**: SQLite.swift ensures compile-time type checking. Proper null handling for optional fields.
+**Type-Safe**: SQLite.swift provides compile-time type checking. Proper null handling for optional fields. Zero unsafe code.
 
-**Version-Controlled**: Content changes are tracked in git. Database is regenerated from source on each migrate.
+**Version-Controlled Database**: The `maxwell.db` file itself is version-controlled. Snapshot of knowledge at release time. Easy to rollback if needed.
 
-**Human-Maintained**: No automatic content generation. Patterns are manually written, reviewed, and validated.
+**Human-Maintained**: No automatic content generation. Content is manually written, reviewed, and validated before import.
 
 ---
 
-## Workflow
+## Workflow for Future Maintenance
 
-The typical workflow for extending Maxwell:
+The typical workflow for adding new content to Maxwell:
 
 ```
-1. Write a markdown guide in skill/guides/
-2. Commit to git
-3. Run: maxwell migrate skills/
-4. Search returns new content: maxwell search "query"
-5. Skills access via: maxwell search (called from SKILL.md)
+1. Write markdown files in temporary directory (not in repo)
+2. Run: maxwell migrate /tmp/your-content/
+3. Verify: maxwell search "query" returns results
+4. Verify: sqlite3 checks the database
+5. Delete markdown files (no longer needed)
+6. Database becomes the permanent record
 ```
 
-That's it. No complex tables. No schema migrations. No data entry forms. Just markdown files and a simple migration process.
+That's it. Simple, clean workflow. No complex schema. No sync issues. Database is the source of truth.
 
 ---
 
