@@ -4,67 +4,47 @@ This guide explains how to extend Maxwell's knowledge base with new patterns and
 
 ---
 
-## Current Database Structure
+## Current System: Markdown-First Approach
 
-Maxwell uses SQLite with two main tables:
+Maxwell uses a **simple, elegant design**:
 
-| Table | Purpose | Current Rows |
-|-------|---------|--------------|
-| `documents` | Markdown files from skill directories | 70 |
-| `patterns` | Structured patterns with metadata | (prepared for future) |
+```
+Markdown Files (Version-Controlled)
+    ↓
+maxwell migrate command
+    ↓
+SQLite documents table
+    ↓
+maxwell search queries
+    ↓
+Skills get results via CLI
+```
+
+**Why this works:**
+- Source of truth is markdown files in git (easy to review, version-controlled)
+- Migration extracts metadata automatically
+- SQLite provides fast search
+- CLI binary is single access point
+- No complex schema management
+- No data duplication between git and database
 
 **Database Location**: `~/.claude/resources/databases/maxwell.db`
 
 ---
 
-## How Maxwell Works
+## How to Add Content to Maxwell
 
-1. **Markdown files** live in skill directories:
-   - `skills/skill-pointfree/skill/guides/*.md`
-   - `skills/skill-shareplay/skill/guides/*.md`
-   - `skills/skill-meta/skill/*.md`
+### Step 1: Create Markdown Files
 
-2. **Migration process**:
-   ```bash
-   maxwell migrate /path/to/skills
-   ```
-   - Recursively finds all `.md` files
-   - Extracts title from `# Title` in markdown
-   - Infers domain from file path
-   - Inserts into `documents` table with metadata
+Add `.md` files to skill directories:
 
-3. **Search access**:
-   ```bash
-   maxwell search "query" [--domain TCA|SharePlay] [--limit N]
-   ```
-   - Skills call this command via Bash tool
-   - Returns matching documents from database
-   - Results ranked by relevance
-
----
-
-## Adding Content to Maxwell
-
-### Method 1: Add Markdown Files (Easiest)
-
-For single-domain patterns, add markdown files to skill directories:
-
-**For TCA patterns:**
 ```
 skills/skill-pointfree/skill/guides/pattern-name.md
+skills/skill-shareplay/skill/guides/feature-guide.md
+skills/skill-meta/skill/architecture-guide.md
 ```
 
-**For SharePlay patterns:**
-```
-skills/skill-shareplay/skill/guides/pattern-name.md
-```
-
-**For Maxwell's own patterns:**
-```
-skills/skill-meta/skill/pattern-name.md
-```
-
-**File format:**
+File format - just plain markdown:
 ```markdown
 # Pattern Name
 
@@ -82,56 +62,82 @@ Real working code.
 - [ ] Item 2
 ```
 
-**After adding files:**
+### Step 2: Migrate to Database
+
 ```bash
 maxwell migrate /Volumes/Plutonian/_Developer/Smith\ Tools/Maxwell/skills
 ```
 
-This updates the database with new documents.
+This:
+- Finds all `.md` files recursively
+- Extracts `# Title` as document title
+- Infers domain from directory path (skill-pointfree → TCA, skill-shareplay → SharePlay)
+- Extracts tags from filename and path
+- Inserts into `documents` table with full metadata
 
-### Method 2: Create New Skill (For New Domain)
+### Step 3: Query Results
 
-To add a new specialized skill:
+Skills and agents access via CLI:
 
-1. **Create skill directory**:
+```bash
+maxwell search "Reducer composition"                   # Search all
+maxwell search "@Shared" --domain TCA                  # Search domain
+maxwell domain SharePlay                               # List domain docs
+maxwell pattern "TCA @Shared Single Owner"             # Find by name
+```
+
+---
+
+## Creating a New Skill (For a New Domain)
+
+To add expertise in a new framework area:
+
+1. **Create skill directory structure**:
    ```
    skills/skill-newdomain/
    ├── skill/
-   │   ├── SKILL.md              # Skill manifest
+   │   ├── SKILL.md                    # Skill manifest (see below)
    │   └── guides/
-   │       ├── pattern1.md
-   │       ├── pattern2.md
-   │       └── ...
-   └── README.md
+   │       ├── guide-1.md
+   │       ├── guide-2.md
+   │       └── ...more guides
+   └── README.md                       # Optional description
    ```
 
-2. **Create SKILL.md manifest** (copy from existing skill and modify):
+2. **Create SKILL.md manifest**:
    ```yaml
    ---
    name: "skill-newdomain"
-   description: "Specialization in NewDomain"
-   auto-triggers: ["KEYWORD1", "KEYWORD2"]
+   description: "Expertise in NewDomain framework"
+   auto-triggers: ["KEYWORD1", "KEYWORD2", "KEYWORD3"]
    allowed-tools: [Bash]
    model: "claude-opus"
    ---
 
    # NewDomain Specialist
 
-   Your expertise blurb...
+   I'm specialized in NewDomain development.
 
-   When users ask about NewDomain, I can help with:
-   - Task 1
-   - Task 2
+   When you ask about NewDomain, I can help with:
+   - Core concepts and best practices
+   - Implementation patterns and examples
+   - Integration with other frameworks
+   - Common pitfalls and how to avoid them
+
+   I'll search Maxwell's knowledge base for relevant patterns
+   and provide practical guidance.
    ```
 
-3. **Deploy new skill**:
+3. **Add markdown guides to `guides/` directory**:
+   - Follow the same format as other skill guides
+   - Start with `# Title`
+   - Include sections: Problem, Solution, Code Example, Validation Checklist
+   - One guide per file
+
+4. **Deploy and migrate**:
    ```bash
    cp -r skills/skill-newdomain ~/.claude/skills/
-   ```
-
-4. **Migrate content**:
-   ```bash
-   maxwell migrate ~/path/to/skill
+   maxwell migrate /Volumes/Plutonian/_Developer/Smith\ Tools/Maxwell/skills
    ```
 
 ---
@@ -139,80 +145,90 @@ To add a new specialized skill:
 ## Database Schema
 
 ### documents table
+Only active table for current content:
+
 ```
 id                  - Auto-incrementing ID
-title               - Document title (from # Heading)
+title               - Document title (extracted from # Heading)
 content             - Full markdown content
-path                - File path
-document_type       - "markdown" or "pattern"
-category            - Framework category (TCA, SharePlay, etc.)
-subcategory         - Optional subcategory
+path                - Original file path
+document_type       - "markdown" (all current documents)
+category            - Framework (TCA, SharePlay, RealityKit, etc.)
+subcategory         - Optional (e.g., "state-management" for TCA)
 role                - "guide", "reference", "example", "checklist"
 enforcement_level   - "required", "recommended", "optional"
-tags                - Comma-separated keywords
-file_size           - Size in bytes
+tags                - Comma-separated keywords for search
+file_size           - File size in bytes
 line_count          - Number of lines
-created_at          - Auto-set to current date
+created_at          - Auto-set to current date when migrated
 ```
 
 ### patterns table
+Prepared for future structured pattern storage:
+
 ```
 id                  - Auto-incrementing ID
-name                - Pattern name (unique)
+name                - Pattern name (unique identifier)
 domain              - Primary domain (TCA, SharePlay, etc.)
 problem             - Problem it solves
 solution            - How to solve it
-code_example        - Code snippet
-created_at          - Auto-set
-last_validated      - Manual timestamp of last verification
-is_current          - Boolean: is this pattern still valid?
-notes               - Additional notes
+code_example        - Code snippet demonstrating pattern
+created_at          - Auto-set to current date
+last_validated      - Manual timestamp (when pattern was last tested)
+is_current          - Boolean (is this pattern still valid?)
+notes               - Additional context or caveats
 ```
+
+**Current Status**: Empty. The `documents` table is sufficient for Maxwell v2.0. The `patterns` table exists for future use when structured pattern data becomes needed.
 
 ---
 
 ## Maintenance Tasks
 
-### Keeping Patterns Fresh
+### Keep Content Fresh
 
-**Quarterly review**:
-1. Update code examples for new framework versions
-2. Remove obsolete patterns (mark `is_current = false`)
-3. Add validation notes to patterns
-4. Merge duplicate patterns
-
-**When a framework updates**:
-1. Search related markdown files:
+**When frameworks update** (e.g., TCA 1.25 released):
+1. Find affected guides:
    ```bash
    grep -r "1.24" skills/skill-pointfree/
    ```
-2. Update code examples to new version
-3. Add note: "(Updated for TCA 1.25)"
-4. Re-migrate:
+2. Update code examples to new API
+3. Add note in guide: "(Updated for TCA 1.25 - November 2025)"
+4. Commit to git
+5. Re-migrate to update database:
    ```bash
    maxwell migrate skills/
    ```
 
-### Testing Content
+**Quarterly review**:
+1. Run search on common queries - do results make sense?
+2. Check code examples still compile with current SDK
+3. Merge duplicate guides (keep the better one)
+4. Remove guides that are obsolete (delete markdown file)
 
-Verify markdown is valid:
-```bash
-# Check markdown syntax
-maxwell search "your-pattern" --domain TCA
+### Before Adding Code Examples
 
-# Manually verify binary works
-maxwell domain TCA | head -5
-```
-
-### Validating Code Examples
-
-Before adding code examples:
+Validation checklist:
 - [ ] Code compiles with current Swift version
-- [ ] Example is complete (not pseudo-code)
-- [ ] Example solves the stated problem
-- [ ] Includes error handling where needed
-- [ ] Follows Apple best practices
-- [ ] Tested in real project (not theoretical)
+- [ ] Example is complete (not pseudo-code snippets)
+- [ ] Example demonstrates the stated problem/solution
+- [ ] Includes proper error handling
+- [ ] Follows Apple Human Interface Guidelines and best practices
+- [ ] Tested in a real project (not theoretical)
+
+### Testing Changes
+
+After modifying guides:
+```bash
+# Verify search works
+maxwell search "your-pattern"
+
+# Check results for your domain
+maxwell domain TCA | grep -i "your-pattern"
+
+# List all docs in a domain
+maxwell domain SharePlay
+```
 
 ---
 
@@ -300,23 +316,41 @@ maxwell --help
 
 ## Design Principles
 
-**Markdown-First**: Content lives in version-controlled markdown files, not just in database.
+**Markdown-First**: All content is markdown files in git. Database is a cached, searchable index.
 
-**CLI-Driven**: Maxwell binary is single source of truth for queries. Skills don't access database directly; they call the binary.
+**Simple Schema**: One `documents` table for current needs. No complex pattern/integration/discovery tables. Overengineering avoided.
 
-**Type-Safe**: SQLite.swift ensures compile-time checked queries with proper null handling.
+**CLI-Driven**: Maxwell binary is the single source of truth for all queries. No direct database access from skills.
 
-**Stateless Search**: Each search is independent. No caching or indexing optimization needed.
+**Type-Safe**: SQLite.swift ensures compile-time type checking. Proper null handling for optional fields.
 
-**Human-Maintained**: No automatic ingestion or contradiction detection. Content is manually curated.
+**Version-Controlled**: Content changes are tracked in git. Database is regenerated from source on each migrate.
+
+**Human-Maintained**: No automatic content generation. Patterns are manually written, reviewed, and validated.
+
+---
+
+## Workflow
+
+The typical workflow for extending Maxwell:
+
+```
+1. Write a markdown guide in skill/guides/
+2. Commit to git
+3. Run: maxwell migrate skills/
+4. Search returns new content: maxwell search "query"
+5. Skills access via: maxwell search (called from SKILL.md)
+```
+
+That's it. No complex tables. No schema migrations. No data entry forms. Just markdown files and a simple migration process.
 
 ---
 
 ## Next Steps
 
-1. Add new markdown files to skill `guides/` directories
-2. Run `maxwell migrate skills/` to populate database
-3. Test with `maxwell search` command
-4. Verify skills can access content via Bash tool
+1. **Add new patterns** to skill `guides/` directories as markdown files
+2. **Run migration** to index them: `maxwell migrate skills/`
+3. **Test with search** to verify they appear: `maxwell search "topic"`
+4. **Verify skills find them** - they'll appear in skill responses
 
-**Maxwell becomes more valuable as its knowledge grows. Every pattern documented helps the next developer.**
+**Maxwell becomes more valuable as its knowledge grows. The simplicity of the markdown-first approach means minimal overhead to add new expertise.**
