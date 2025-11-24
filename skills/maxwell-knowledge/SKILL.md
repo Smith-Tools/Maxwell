@@ -1,6 +1,6 @@
 ---
 name: Maxwell Knowledge Base
-description: Comprehensive knowledge base integration with embedded SQLite database containing 122 documents and 129,000+ words of Swift/TCA development patterns, architectural decisions, and production solutions.
+description: Comprehensive knowledge base integration with embedded SQLite database containing extensive Swift/TCA development patterns, architectural decisions, and production solutions.
 tags:
   - "Smith"
   - "knowledge base"
@@ -16,6 +16,7 @@ tags:
   - "visionOS"
   - "iOS"
   - "macOS"
+  - Bash
 version: "3.0.0"
 author: "Claude Code Skill - Maxwell Architecture"
 ---
@@ -31,7 +32,7 @@ author: "Claude Code Skill - Maxwell Architecture"
 
 ### **Instant Knowledge Access**
 - **Database Location**: `~/.claude/resources/databases/maxwell.db`
-- **Knowledge Size**: 122 documents, 129,000+ words of Swift/TCA expertise
+- **Knowledge Size**: Extensive documentation covering Swift/TCA expertise
 - **Search Performance**: <5ms queries with BM25 ranking
 - **Cross-Domain**: SwiftUI, TCA, visionOS, iOS, macOS patterns
 - **Production-Tested**: Real-world solutions from Smith development
@@ -215,9 +216,9 @@ def solve_developer_problem(self, query: str) -> Dict:
 ## 📊 Knowledge Base Statistics
 
 ### **Current Content**
-- **Documents**: 122 Smith framework files
-- **Word Count**: 129,000+ words of Swift/TCA expertise
-- **Domains**: 7 major knowledge domains
+- **Documents**: Extensive Smith framework documentation
+- **Word Count**: Comprehensive Swift/TCA expertise
+- **Domains**: Multiple knowledge domains
 - **Performance**: <5ms search across all content
 - **Database**: SQLite with FTS5 full-text search
 
