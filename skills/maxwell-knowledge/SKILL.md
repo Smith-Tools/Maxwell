@@ -39,7 +39,7 @@ author: "Claude Code Skill - Maxwell Architecture"
 ## 🎯 Skill Invocation
 
 **When invoked, this skill:**
-1. **Executes** `python3 /Users/elkraneo/.claude/skills/maxwell-knowledge/knowledge/maxwell-knowledge-base.py "query"`
+1. **Executes** `python3 ~/.claude/skills/maxwell-knowledge/knowledge/maxwell-knowledge-base.py "query"` (home-relative path)
 2. **Searches** the SQLite database at `~/.claude/resources/databases/maxwell.db`
 3. **Returns** structured JSON with relevant knowledge and source references
 4. **Uses** BM25 ranking and FTS5 for optimal search results
@@ -186,9 +186,9 @@ User: "When to use @StateObject vs @ObservedObject"
 
 **IMPORTANT**: This skill provides access to a SQLite database via Python script. When a user asks for information:
 
-1. **Execute the Python script** using the absolute path:
+1. **Execute the Python script** using the home-relative path for cross-directory compatibility:
    ```bash
-   python3 /Users/elkraneo/.claude/skills/maxwell-knowledge/knowledge/maxwell-knowledge-base.py "user query here"
+   python3 ~/.claude/skills/maxwell-knowledge/knowledge/maxwell-knowledge-base.py "user query here"
    ```
 
 2. **The script will automatically**:
