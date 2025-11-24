@@ -6,13 +6,6 @@ tags:
   - "meta"
   - "self-reflection"
   - "skill coordination"
-triggers:
-  - "Maxwell"
-  - "meta"
-  - "self-reflection"
-  - "skill coordination"
-  - "knowledge synthesis"
-allowed-tools:
   - Read
   - Glob
   - Grep
@@ -27,6 +20,7 @@ author: "Claude Code Skill - Maxwell Architecture"
 For comprehensive guidance on Maxwell system architecture and meta-cognition:
 
 - **Claude Architecture**: [knowledge/claude-architecture.md](knowledge/claude-architecture.md)
+- **Smith Agent Debugging**: [knowledge/smith-agent-debugging.md](knowledge/smith-agent-debugging.md)
 
 ## Search Your Knowledge
 

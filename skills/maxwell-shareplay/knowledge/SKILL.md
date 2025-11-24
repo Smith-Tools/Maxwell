@@ -8,16 +8,6 @@ tags:
   - shared-experiences
   - multiplayer
   - spatial-computing
-triggers:
-  - "SharePlay"
-  - "GroupActivities"
-  - "shared experience"
-  - "multiplayer"
-  - "collaborative"
-  - "group activity"
-  - "co-watching"
-  - "co-playing"
-version: "2.2.0"
 author: "Claude Code Skill"
 ---
 

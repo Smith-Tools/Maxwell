@@ -12,17 +12,6 @@ tags:
   - "Testing"
   - "Multi-framework"
   - "Swift Composable Architecture"
-triggers:
-  - "Point-Free"
-  - "coordinate"
-  - "integrate"
-  - "multiple frameworks"
-  - "together"
-  - "combination"
-  - "architecture"
-  - "full stack"
-  - "framework integration"
-version: "1.0.0"
 author: "Claude Code Skill - Maxwell Architecture"
 ---
 
