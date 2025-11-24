@@ -2,10 +2,10 @@
 
 set -e
 
-echo "🚀 Maxwell Installation (Multi-Skill Architecture v3.0)"
+echo "🚀 Maxwell Installation (Simplified Architecture v4.0)"
 echo "======================================================"
-echo "📦 Version Controlled: Specialized skills + Maxwell agent orchestrator"
-echo "🔧 Deploys: 5 domain skills + Maxwell agent with embedded knowledge"
+echo "📦 Version Controlled: 2-skill system + SQLite knowledge database"
+echo "🔧 Deploys: maxwell-knowledge + maxwell-meta + comprehensive database"
 echo ""
 
 # Configuration
@@ -211,7 +211,7 @@ echo "   🏗️ Architecture: Hybrid - Embedded skill knowledge + Central knowl
 
 # 6. System Status Report
 echo ""
-echo "📊 Maxwell Multi-Skill System Status:"
+echo "📊 Maxwell v4.0 System Status:"
 echo "   🎭 Maxwell Agent: 1 orchestrator"
 echo "   🏗️ Specialized Skills: ${#REQUIRED_SKILLS[@]} domain skills"
 echo "   📚 Embedded Knowledge: $total_knowledge total documents"
@@ -221,8 +221,8 @@ echo "   💾 Total Storage: $(du -sh "$LOCAL_SKILL_DIR" | cut -f1)"
 
 # 7. Installation Success Summary
 echo ""
-echo "🎉 Multi-Skill Installation Complete!"
-echo "====================================="
+echo "🎉 Maxwell v4.0 Installation Complete!"
+echo "==================================="
 echo ""
 echo "📦 Components Installed:"
 echo "   ✅ Maxwell Agent: $LOCAL_AGENT_DIR/maxwell/"
@@ -238,7 +238,7 @@ fi
 echo "   🏗️ Architecture: Hybrid - Embedded skill knowledge + Central knowledge repository + SQLite database"
 echo ""
 
-echo "🎯 Multi-Skill Architecture Benefits:"
+echo "🎯 Maxwell v4.0 Architecture Benefits:"
 echo "   🧠 Specialized Expertise: Each skill focuses on its domain"
 echo "   🔄 Agent Orchestration: Maxwell coordinates cross-domain queries"
 echo "   📊 Size Optimization: Skills stay within memory constraints"

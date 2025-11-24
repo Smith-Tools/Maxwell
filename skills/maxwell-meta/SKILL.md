@@ -9,6 +9,7 @@ tags:
   - Read
   - Glob
   - Grep
+allowed-tools: Read,Glob,Grep
 version: "3.0.0"
 author: "Claude Code Skill - Maxwell Architecture"
 ---

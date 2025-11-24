@@ -344,7 +344,17 @@ Add markdown files to appropriate categories and run update to rebuild the datab
         # Process results
         if kb_results:
             self.stats['kb_hits'] += 1
+
+            # Find best match - prefer exact title matches
             best_match = kb_results[0]
+            query_terms = query.lower().split()
+
+            # Look for exact title matches first
+            for result in kb_results:
+                title_lower = result['title'].lower()
+                if all(term in title_lower for term in query_terms):
+                    best_match = result
+                    break
 
             print(f"✅ Using knowledge: {best_match['title']}")
 
@@ -378,8 +388,18 @@ Add markdown files to appropriate categories and run update to rebuild the datab
 
     def _search_knowledge(self, query: str, limit: int = 5) -> List[Dict]:
         """Search knowledge base with FTS5"""
-        # Remove special characters that break FTS5 syntax
-        clean_query = query.replace('@', ' ').replace(':', ' ').replace('(', ' ').replace(')', ' ').replace('.', ' ')
+        # Remove special characters that break FTS5 syntax - COMPREHENSIVE cleaning
+        special_chars = ['@', ':', '(', ')', '.', '-', '/', '\\', '[', ']', '{', '}', '<', '>', '|', '=', '+', '*', '?', '!']
+        clean_query = query
+        for char in special_chars:
+            clean_query = clean_query.replace(char, ' ')
+
+        # Remove any remaining problematic characters and collapse multiple spaces
+        clean_query = ' '.join(clean_query.split())
+
+        # Skip empty queries
+        if not clean_query.strip():
+            return []
 
         cursor = self.conn.execute('''
             SELECT knowledge.id, knowledge.title, knowledge.content, knowledge.folder, knowledge.tags,

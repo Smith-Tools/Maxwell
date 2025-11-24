@@ -1,6 +1,6 @@
 ---
 name: Maxwell Knowledge Base
-description: Comprehensive knowledge base integration with embedded SQLite database containing extensive Swift/TCA development patterns, architectural decisions, and production solutions.
+description: Comprehensive knowledge base with SQLite database containing Swift/TCA patterns, architectural decisions, production solutions, game analysis, and development guidance. Auto-activates for any technical questions about Swift, Apple platforms, or project analysis.
 tags:
   - "Smith"
   - "knowledge base"
@@ -16,7 +16,15 @@ tags:
   - "visionOS"
   - "iOS"
   - "macOS"
+  - "Green Spurt"
+  - "SharePlay"
+  - "game"
+  - "project"
+  - "analysis"
+  - "database"
+  - "technical questions"
   - Bash
+allowed-tools: Bash
 version: "3.0.0"
 author: "Claude Code Skill - Maxwell Architecture"
 ---
@@ -27,6 +35,16 @@ author: "Claude Code Skill - Maxwell Architecture"
 **Purpose**: Provide immediate access to 54 documents with 80,000+ words of proven Swift/TCA patterns and solutions
 **Expertise**: **Knowledge Base** with SQLite FTS5 search, BM25 ranking, and cross-domain pattern retrieval
 **Content**: Complete Swift/TCA knowledge base with production-tested solutions
+
+## 🎯 Skill Invocation
+
+**When invoked, this skill:**
+1. **Executes** `python3 /Users/elkraneo/.claude/skills/maxwell-knowledge/knowledge/maxwell-knowledge-base.py "query"`
+2. **Searches** the SQLite database at `~/.claude/resources/databases/maxwell.db`
+3. **Returns** structured JSON with relevant knowledge and source references
+4. **Uses** BM25 ranking and FTS5 for optimal search results
+
+**Required Tool:** `Bash` (to execute Python script)
 
 ## 🎯 What This Skill Provides
 
@@ -162,6 +180,36 @@ User: "Cannot find in scope SwiftUI property"
 ```
 User: "When to use @StateObject vs @ObservedObject"
 → Returns comprehensive guidance with examples
+```
+
+## 🔧 How to Use This Skill
+
+**IMPORTANT**: This skill provides access to a SQLite database via Python script. When a user asks for information:
+
+1. **Execute the Python script** using the absolute path:
+   ```bash
+   python3 /Users/elkraneo/.claude/skills/maxwell-knowledge/knowledge/maxwell-knowledge-base.py "user query here"
+   ```
+
+2. **The script will automatically**:
+   - Search the SQLite database with FTS5
+   - Find relevant knowledge documents
+   - Return structured results with source references
+
+3. **Process the results**:
+   - If `status: knowledge_found`: Use the content from the database
+   - If `status: no_knowledge_found`: Admit no information is available
+
+**Script Output Format:**
+```json
+{
+  "status": "knowledge_found",
+  "solution": "content from database",
+  "source": "Document Title",
+  "response_time": 0.004,
+  "reasoning": "Found relevant solution in knowledge base",
+  "tags": ["tca", "swiftui", "visionos"]
+}
 ```
 
 ## 🔍 Knowledge Access Methods
