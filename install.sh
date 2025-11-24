@@ -4,8 +4,8 @@ set -e
 
 echo "🚀 Maxwell Installation (Simplified Architecture v4.0)"
 echo "======================================================"
-echo "📦 Version Controlled: 2-skill system + SQLite knowledge database"
-echo "🔧 Deploys: maxwell-knowledge + maxwell-meta + comprehensive database"
+echo "📦 Version Controlled: 3-skill system + SQLite knowledge database"
+echo "🔧 Deploys: maxwell-knowledge + maxwell-meta + maxwell-librarian + comprehensive database"
 echo ""
 
 # Configuration
@@ -29,7 +29,7 @@ if [ ! -f "$MAXWELL_SOURCE/agent/maxwell.md" ]; then
 fi
 
 # Check specialized skills
-REQUIRED_SKILLS=("maxwell-meta" "maxwell-knowledge")
+REQUIRED_SKILLS=("maxwell-meta" "maxwell-knowledge" "maxwell-librarian")
 for skill in "${REQUIRED_SKILLS[@]}"; do
     if [ ! -d "$MAXWELL_SOURCE/skills/$skill" ]; then
         MISSING_COMPONENTS+=("skills/$skill")
@@ -60,11 +60,12 @@ rm -rf "$LOCAL_SKILL_DIR/maxwell-knowledge" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/maxwell-knowledge-base" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/maxwell-meta" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/maxwell-knowledge" 2>/dev/null || true
-# Clean up old redundant skills
+# Clean up old redundant skills (these are deprecated in favor of centralized knowledge)
 rm -rf "$LOCAL_SKILL_DIR/maxwell-pointfree" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/maxwell-shareplay" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/maxwell-swift" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/maxwell-visionos" 2>/dev/null || true
+rm -rf "$LOCAL_SKILL_DIR/maxwell-librarian" 2>/dev/null || true
 # Remove old skill-* prefixed versions
 rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-tca" 2>/dev/null || true
 rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-architecture" 2>/dev/null || true
@@ -226,16 +227,13 @@ echo "==================================="
 echo ""
 echo "📦 Components Installed:"
 echo "   ✅ Maxwell Agent: $LOCAL_AGENT_DIR/maxwell/"
-echo "   ✅ Point-Free Expert: $LOCAL_SKILL_DIR/maxwell-pointfree/ (with embedded TCA knowledge)"
-echo "   ✅ SharePlay Expert: $LOCAL_SKILL_DIR/maxwell-shareplay/ (with embedded collaborative knowledge)"
-echo "   ✅ Swift Expert: $LOCAL_SKILL_DIR/maxwell-swift/ (ready for user content)"
-echo "   ✅ visionOS Expert: $LOCAL_SKILL_DIR/maxwell-visionos/ (with embedded spatial knowledge)"
-echo "   ✅ Meta Expert: $LOCAL_SKILL_DIR/maxwell-meta/ (with embedded self-reflection knowledge)"
 echo "   ✅ Knowledge Base: $LOCAL_SKILL_DIR/maxwell-knowledge/ (with SQLite database integration)"
+echo "   ✅ Meta Expert: $LOCAL_SKILL_DIR/maxwell-meta/ (with embedded self-reflection knowledge)"
+echo "   ✅ Maxwell Librarian: $LOCAL_SKILL_DIR/maxwell-librarian/ (private knowledge base management with duplicate detection)"
 if [ -d "$KNOWLEDGE_REPO_DIR" ]; then
     echo "   🧠 Knowledge Repository: $KNOWLEDGE_REPO_DIR ($repo_knowledge documents)"
 fi
-echo "   🏗️ Architecture: Hybrid - Embedded skill knowledge + Central knowledge repository + SQLite database"
+echo "   🏗️ Architecture: Hybrid - Embedded skill knowledge + Central knowledge repository + SQLite database + Knowledge base management"
 echo ""
 
 echo "🎯 Maxwell v4.0 Architecture Benefits:"
@@ -244,6 +242,7 @@ echo "   🔄 Agent Orchestration: Maxwell coordinates cross-domain queries"
 echo "   📊 Size Optimization: Skills stay within memory constraints"
 echo "   🎯 Auto-Triggering: Skills activate on domain keywords"
 echo "   🔗 Mix-and-Match: Agent synthesizes knowledge from multiple skills"
+echo "   📚 Knowledge Management: Librarian prevents bloat with duplicate detection"
 
 echo "💡 Usage Examples:"
 echo "   Single Domain (Skill Auto-Triggered):"
@@ -253,12 +252,19 @@ echo "     'SharePlay Spatial Persona integration' → visionOS collaborative pa
 echo "     'SwiftUI @StateObject vs @ObservedObject' → SwiftUI lifecycle management"
 echo "     'Smith framework architecture decision' → Framework selection patterns"
 echo "     'Cross-platform TCA implementation' → iOS/macOS/visionOS patterns"
+echo ""
+echo "   Knowledge Base Management (Manual Librarian Invocation):"
+echo "     '/skill maxwell-librarian import \"/path/to/docs\" \"LibraryName\"' → Import with duplicate detection"
+echo "     '/skill maxwell-librarian check-duplicates \"/path/to/docs\" \"LibraryName\"' → Analyze before import"
+echo "     '/skill maxwell-librarian validate \"LibraryName\"' → Quality validation"
+echo "     '/skill maxwell-librarian health' → Knowledge base health check"
 
-echo "🚀 Simplified Maxwell Architecture:"
-echo "   🎭 Single Maxwell agent with 2 integrated skills"
+echo "🚀 Streamlined Maxwell Architecture:"
+echo "   🎭 Single Maxwell agent with 3 integrated skills"
 echo "   🧠 Comprehensive knowledge database (122+ documents, 129K+ words)"
 echo "   🧭 Self-reflection and coordination capabilities"
 echo "   ⚡ Sub-millisecond search across all knowledge domains"
+echo "   📚 Knowledge base management with duplicate prevention"
 
 echo "🔧 Knowledge Base Coverage:"
 echo "   🔥 TCA & Point-Free: Comprehensive patterns, testing, dependency injection"
@@ -267,13 +273,16 @@ echo "   👁️ visionOS: Spatial computing, RealityKit, immersive experiences"
 echo "   🌟 SwiftUI: State management, lifecycle, performance patterns"
 echo "   🏗️ Smith Framework: Architecture decisions, validation, tooling"
 echo "   🐛 Error Resolution: Compilation fixes, debugging, common issues"
+echo "   📚 Knowledge Management: Duplicate detection, quality validation, import automation"
 
 echo "🎯 Ready for Comprehensive Knowledge Queries!"
 echo "   • Single Database: All knowledge accessible in one place"
 echo "   • Cross-Domain: Automatic knowledge synthesis across all areas"
 echo "   • Meta-Capabilities: Self-reflection and iterative problem-solving"
+echo "   • Knowledge Management: Safe import with duplicate detection and quality validation"
 
 echo "🔗 Quick Test:"
 echo "   Ask Claude: 'TCA reducer compilation error with @StateObject' (Comprehensive database search)"
 echo "   Ask Claude: 'visionOS SharePlay Spatial Persona integration' (Multi-domain patterns)"
 echo "   Ask Claude: 'SwiftUI state management best practices' (Complete lifecycle guidance)"
+echo "   Test Librarian: '/skill maxwell-librarian health' (Knowledge base health check)"

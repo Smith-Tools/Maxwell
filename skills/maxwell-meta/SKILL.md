@@ -1,20 +1,14 @@
 ---
 name: Maxwell Meta Expert
-description: Self-reflection and meta-cognition for the Maxwell skill ecosystem. Provides insight into how Maxwell skills work together, their interactions, coordination patterns, and self-improvement strategies for the entire system.
+description: Self-reflection and meta-cognition for the Maxwell skill
 tags:
   - "Maxwell"
-  - "meta"
-  - "self-reflection"
-  - "skill coordination"
-  - Read
-  - Glob
-  - Grep
 allowed-tools: Read,Glob,Grep
 version: "3.0.0"
 author: "Claude Code Skill - Maxwell Architecture"
 ---
 
-# Maxwell Meta Expert - System Coordination
+# Maxwell Meta Expert
 
 ## Core Knowledge Base
 
