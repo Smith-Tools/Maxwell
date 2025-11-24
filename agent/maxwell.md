@@ -3,9 +3,7 @@ name: maxwell
 description: Multi-skill knowledge synthesizer for cross-domain pattern combination and integration
 model: 'inherit'
 skills: maxwell-meta,maxwell-knowledge
-tools:
-  - Task
-  - Bash
+tools: []
 color: orange
 ---
 
