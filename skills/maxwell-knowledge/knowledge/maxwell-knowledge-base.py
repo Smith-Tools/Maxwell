@@ -378,7 +378,8 @@ Add markdown files to appropriate categories and run update to rebuild the datab
 
     def _search_knowledge(self, query: str, limit: int = 5) -> List[Dict]:
         """Search knowledge base with FTS5"""
-        clean_query = query.replace('@', ' ').replace(':', ' ').replace('(', ' ').replace(')', ' ')
+        # Remove special characters that break FTS5 syntax
+        clean_query = query.replace('@', ' ').replace(':', ' ').replace('(', ' ').replace(')', ' ').replace('.', ' ')
 
         cursor = self.conn.execute('''
             SELECT knowledge.id, knowledge.title, knowledge.content, knowledge.folder, knowledge.tags,
