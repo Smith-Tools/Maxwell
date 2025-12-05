@@ -1,199 +1,182 @@
 # Maxwell Knowledge System v4.0
 
-**Automatic knowledge access with SQLite database and simplified agent orchestration** - A comprehensive knowledge base system providing instant access to Swift/TCA development patterns through automatic database queries.
+**Personal discovery knowledge base for Swift/TCA development** - A simplified file-based system providing instant access to your documented learnings and case studies.
 
 ## 🎯 What Maxwell v4.0 Provides
 
-### **🧠 Comprehensive Knowledge Base**
-- **Database**: SQLite with 122+ documents covering Swift/TCA patterns
-- **Performance**: Sub-millisecond search with FTS5 and BM25 ranking
-- **Coverage**: Smith framework, SwiftUI, TCA, visionOS, error resolution
-- **Access**: Automatic database queries - no special syntax required
+### **🧠 Personal Discovery Knowledge Base**
+- **Files**: 44 personal discoveries covering Swift/TCA learnings
+- **Performance**: Instant search with Grep across all files (<5ms)
+- **Coverage**: Smith framework, SwiftUI, TCA, visionOS, debugging patterns
+- **Access**: Simple file-based search - no database overhead
 
-### **🎭 Maxwell Agent**
-- **Automatic Knowledge Access**: Queries database for ANY technical question
-- **Zero Cognitive Burden**: Users ask questions naturally
-- **Cross-Domain Synthesis**: Combines patterns across multiple domains
-- **Preloaded Skills**: maxwell-meta (coordination) + maxwell-knowledge (database)
+### **🎭 Maxwell Skill**
+- **Automatic Discovery Access**: Searches personal discoveries for Swift/TCA questions
+- **Simple Integration**: Uses built-in Grep/Read/Glob tools
+- **No Database**: File-based architecture, no imports or migrations
+- **Git-Tracked**: Version control and diffs work naturally
 
-## 🏗️ Final Architecture
+## 🏗️ Architecture
 
 ```
-Maxwell Knowledge System
-├── agent/
-│   └── maxwell.md                    # Automatic knowledge access agent
-└── skills/
-    ├── maxwell-knowledge/            # SQLite database skill
-    │   ├── SKILL.md                  # Database interface
-    │   └── knowledge/
-    │       └── maxwell-knowledge-base.py  # SQLite integration
-    └── maxwell-meta/                 # Self-reflection & coordination
-        ├── SKILL.md                  # Meta-cognitive triggers
-        └── knowledge/                # Agent coordination files
+Maxwell Knowledge System v4.0
+├── Source (/Smith-Tools/Maxwell/)
+│   ├── skills/maxwell/
+│   │   ├── SKILL.md              # Skill definition
+│   │   └── README.md             # Documentation
+│   ├── install.sh                # Deployment script
+│   └── Makefile                  # Build automation
+│
+├── Data (/Smith-Tools/Maxwell-data-private/)
+│   ├── DISCOVERY-*.md            # 44 personal discoveries
+│   ├── DISCOVERY-POLICY.md       # Documentation guidelines
+│   ├── EVOLUTION.md              # Historical learnings
+│   └── AGENT-ROUTING.md          # Agent patterns
+│
+└── Installed (~/.claude/)
+    ├── skills/maxwell/           # Deployed skill
+    └── resources/discoveries/    # Deployed discoveries
 ```
 
 ## 🚀 Quick Start
 
 ### **Installation**
 ```bash
-# Deploy Maxwell system with database
+cd /Volumes/Plutonian/_Developer/Smith-Tools/Maxwell
 ./install.sh
 ```
 
 ### **Usage**
 ```bash
-# Natural language questions - automatic database access
-@agent-maxwell "TCA reducer compilation error with @StateObject"
-@agent-maxwell "SwiftUI @StateObject vs @ObservedObject best practices"
-@agent-maxwell "visionOS SharePlay Spatial Persona integration"
-
-# Direct skill access
-@skill-maxwell-knowledge "Smith framework architecture decisions"
+# Maxwell auto-activates for Swift/TCA questions
+"What patterns did I discover for nested TCA reducers?"
+"How do I handle module boundary violations?"
+"What's the issue with inline reducers in GreenSpurt?"
 ```
 
-## 🔧 Knowledge Base
+## 📝 Knowledge Base
 
-### **Database Structure**
-- **Location**: `~/.claude/resources/databases/maxwell.db`
-- **Documents**: 122+ markdown files with Swift/TCA expertise
-- **Search**: SQLite FTS5 with BM25 relevance ranking
-- **Update**: Python script for knowledge base maintenance
+### **Structure**
+- **Location**: `~/.claude/resources/discoveries/`
+- **Files**: 44 markdown files
+- **Types**:
+  - DISCOVERY-*.md (numbered case studies)
+  - DISCOVERY-POLICY.md (documentation guidelines)
+  - EVOLUTION.md (historical patterns)
+  - AGENT-ROUTING.md (agent coordination)
+  - Supporting architecture docs
 
-### **Knowledge Coverage**
-- **TCA**: Reducer patterns, state management, testing strategies
-- **SwiftUI**: View lifecycle, state objects, compilation fixes
-- **visionOS**: Spatial computing, RealityKit, SharePlay integration
-- **Smith Framework**: Architecture decisions, validation, tooling
-- **Error Resolution**: Common compilation issues and debugging patterns
+### **Discovery Coverage**
+- **TCA**: Reducer patterns, state management, nested reducers
+- **SwiftUI**: View lifecycle, state objects, compilation issues
+- **visionOS**: Spatial computing, RealityKit integration
+- **Smith Framework**: Architecture decisions, module boundaries
+- **Debugging**: Compiler errors, performance, common issues
 
-## 🎯 Agent Behavior
+## 🔍 How to Use Maxwell
 
-### **Automatic Knowledge Access**
-- **Technical Questions**: Automatically queries SQLite database
-- **Cross-Domain**: Synthesizes information across multiple knowledge domains
-- **Source References**: Always provides specific file references
-- **Zero Tool Usage**: Uses preloaded skill knowledge (correct behavior)
-
-### **What Users Experience**
-```bash
-User: @agent-maxwell "What is the 'No magic, no surprises' principle?"
-→ Maxwell: Comprehensive explanation from TRIGGERING.md with specific details
-→ Source: /Users/elkraneo/.claude/resources/knowledge/maxwell/TRIGGERING.md
-→ Tool uses: 0 (preloaded knowledge access)
+### **Search Discoveries**
+Agents use Grep to find relevant discoveries:
+```
+Grep:
+  pattern: "nested reducer"
+  path: "~/.claude/resources/discoveries"
+  -i: true
 ```
 
-## 📋 Architecture Decisions
-
-### **Why Simplified 2-Skill System?**
-- **Eliminated Skill Explosion**: 6 specialized skills → 2 essential skills
-- **Database-Centric**: Single comprehensive SQLite database vs. distributed files
-- **User Experience**: Natural questions vs. special syntax requirements
-- **Maintenance**: Single knowledge repository vs. multiple skill updates
-
-### **Agent-Skill Integration**
-- **Preloading**: Skills auto-loaded into agent context at startup
-- **No Dynamic Invocation**: Agents cannot call skills by name (Claude architecture)
-- **Tool Restrictions**: Agent has `tools: []` to force use of preloaded knowledge
-- **Zero Tool Uses**: Correct behavior indicating successful preloaded knowledge access
-
-## 🛠 Development
-
-### **Knowledge Workflow**
-The Maxwell system uses a **source-controlled knowledge repository** for safe knowledge management:
-
-```bash
-# 1. Add/edit knowledge files (source of truth)
-Maxwell-data-private/new-doc.md
-
-# 2. Deploy knowledge to Claude system
-./deploy-knowledge.sh
-
-# 3. Test with Maxwell agent
-@agent-maxwell "Explain the new documentation"
+### **Read a Discovery**
+Read the full content:
+```
+Read:
+  file_path: "~/.claude/resources/discoveries/DISCOVERY-14-NESTED-REDUCER-GOTCHAS.md"
 ```
 
-### **Knowledge Repository Structure**
-- **Source**: `/Volumes/Plutonian/_Developer/Smith-Tools/Maxwell-data-private/`
-- **Deployed**: `~/.claude/resources/knowledge/maxwell/`
-- **Database**: `~/.claude/resources/databases/maxwell.db`
-- **Format**: Flat hierarchy with YAML frontmatter metadata
+### **Add New Discoveries**
+1. Create markdown file: `DISCOVERY-NN-YOUR-TITLE.md`
+2. Follow DISCOVERY-POLICY.md guidelines
+3. File is immediately searchable
 
-### **Adding New Knowledge**
+## 🔧 Development
+
+### **Update Maxwell Skill**
 ```bash
-# 1. Add markdown file to source repository
-echo "# New Knowledge
+cd skills/maxwell
+# Edit SKILL.md or README.md
+git add SKILL.md README.md
+git commit -m "Update Maxwell skill"
+git push
+```
+
+### **Add Discoveries**
+```bash
+cd ../Maxwell-data-private
+# Add your markdown files
+git add *.md
+git commit -m "Add new discoveries"
+git push
+
+# Reinstall to update ~/.claude/resources/discoveries/
+cd ../Maxwell
+./install.sh
+```
+
+### **Reinstall**
+```bash
+cd /Volumes/Plutonian/_Developer/Smith-Tools/Maxwell
+./install.sh
+```
+
+## 📊 What Changed from v3.0
+
+| Aspect | v3.0 | v4.0 |
+|--------|------|------|
+| Storage | SQLite database | Markdown files |
+| Search Tool | Python script | Grep (built-in) |
+| Documents | 234 (mostly third-party) | 44 (personal discoveries) |
+| Performance | Sub-millisecond | Millisecond |
+| Maintenance | Database migrations | Edit files directly |
+| Infrastructure | Complex | Simple |
+
+## ✅ Key Benefits
+
+1. **Simplicity** - No database, no Python, no migrations
+2. **Transparency** - Human-readable markdown files
+3. **Git-Friendly** - Version control and diffs work naturally
+4. **Fast** - Grep searches 44 files instantly
+5. **Maintainable** - Edit files directly, changes are immediate
+6. **Personal** - Only your discoveries, no noise
+
+## 🔀 Rollback to v3.0
+
+If needed, old Maxwell v3.0 architecture is archived:
+
+```bash
+# Restore old components
+mv ~/.claude/skills/maxwell-knowledge-ARCHIVED ~/.claude/skills/maxwell-knowledge
+mv ~/.claude/skills/maxwell-librarian-ARCHIVED ~/.claude/skills/maxwell-librarian
+mv ~/.claude/skills/maxwell-meta-ARCHIVED ~/.claude/skills/maxwell-meta
+mv ~/.claude/resources/databases/maxwell-ARCHIVED.db ~/.claude/resources/databases/maxwell.db
+
+# Remove v4.0
+rm -rf ~/.claude/skills/maxwell
+```
+
+## 📚 Files
+
+- **SKILL.md** - This skill's definition (auto-triggers on Swift/TCA questions)
+- **skills/maxwell/README.md** - Detailed architecture documentation
+- **DEPLOY.md** - Historical deployment notes (old v3.0 architecture)
+- **install.sh** - Installation script
+- **Makefile** - Build automation
+
+## 🤝 Integration with Other Skills
+
+- `sosumi` - Apple documentation (SwiftUI, UIKit, WWDC)
+- `smith` - Smith framework validation
+- Standard tools - Grep, Read, Glob
+
+Maxwell focuses on **personal discoveries only**. For third-party documentation, use `sosumi` or `WebSearch`.
+
 ---
-title: My New Knowledge
-category: swiftui
-tags: [swiftui, patterns]
----
 
-Content here..." > Maxwell-data-private/new-knowledge.md
-
-# 2. Deploy to Claude system
-./deploy-knowledge.sh
-
-# 3. Verify deployment
-@agent-maxwell "What do you know about the new knowledge?"
-```
-
-### **Testing Knowledge Access**
-```bash
-# Test with unique database content
-@agent-maxwell "Explain the 'No magic, no surprises' principle in Smith Tools"
-
-# Direct database access
-@skill-maxwell-knowledge "TCA compilation patterns"
-```
-
-## 🔍 Verification
-
-### **System Health Check**
-```bash
-# Database status
-sqlite3 ~/.claude/resources/databases/maxwell.db "SELECT COUNT(*) FROM knowledge;"
-
-# Agent configuration
-cat ~/.claude/agents/maxwell/maxwell.md | grep -E "(skills|tools)"
-```
-
-### **Expected Results**
-- **Document Count**: 122+ documents in database
-- **Source Repository**: Maxwell-data-private/ (backed up, version controlled)
-- **Agent Skills**: `maxwell-meta,maxwell-knowledge`
-- **Agent Tools**: `[]` (empty - forces preloaded knowledge usage)
-- **Query Response**: Zero tool uses with comprehensive knowledge
-
-## 📚 Knowledge Repository Architecture
-
-### **Source Repository (Maxwell-data-private/)**
-- **Location**: `/Volumes/Plutonian/_Developer/Smith-Tools/Maxwell-data-private/`
-- **Purpose**: Source of truth for knowledge files
-- **Benefits**: Version controlled, backed up, private repository
-- **Workflow**: Edit here → deploy to Claude system
-
-### **Deployed Repository (~/.claude/resources/knowledge/maxwell/)**
-- **Location**: `~/.claude/resources/knowledge/maxwell/`
-- **Purpose**: Runtime knowledge for Claude system
-- **Format**: Flat hierarchy with YAML frontmatter
-- **Categories**: tca, swiftui, visionos, errors, architecture, platform-specific
-- **Source**: Smith framework documentation and patterns
-
-## ✅ Success Criteria
-
-- [x] **Automatic Knowledge Access**: Users ask natural questions
-- [x] **Database Performance**: Sub-millisecond query response
-- [x] **Comprehensive Coverage**: Swift/TCA development patterns
-- [x] **Zero Cognitive Burden**: No special syntax required
-- [x] **Cross-Domain Synthesis**: Agent combines knowledge across domains
-- [x] **Source Attribution**: Always provides specific file references
-
-## 🎉 Mission Accomplished
-
-Maxwell v4.0 provides **instant access to comprehensive Swift/TCA knowledge** through:
-- **Natural language interface** - no special syntax required
-- **Automatic database queries** - sub-millisecond response times
-- **Cross-domain synthesis** - intelligent pattern combination
-- **Comprehensive coverage** - 122+ documents of production-tested patterns
-
-The system successfully eliminates the complexity of skill management while providing immediate access to expert knowledge.
+**Maxwell v4.0: Simple, personal, and discovery-focused. Just markdown files and built-in tools.**
