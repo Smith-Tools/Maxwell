@@ -2,287 +2,104 @@
 
 set -e
 
-echo "🚀 Maxwell Installation (Simplified Architecture v4.0)"
-echo "======================================================"
-echo "📦 Version Controlled: 3-skill system + SQLite knowledge database"
-echo "🔧 Deploys: maxwell-knowledge + maxwell-meta + maxwell-librarian + comprehensive database"
+echo "🚀 Maxwell v4.0 Installation"
+echo "=============================="
+echo "📦 Personal discovery knowledge base - file-based architecture"
 echo ""
 
 # Configuration
 MAXWELL_SOURCE="/Volumes/Plutonian/_Developer/Smith-Tools/Maxwell"
-LOCAL_SKILL_DIR="/Users/elkraneo/.claude/skills"
-LOCAL_AGENT_DIR="/Users/elkraneo/.claude/agents"
+MAXWELL_DATA="/Volumes/Plutonian/_Developer/Smith-Tools/Maxwell-data-private"
+DEST_SKILLS="$HOME/.claude/skills"
+DEST_DISCOVERIES="$HOME/.claude/resources/discoveries"
 
-# Validate source directory
+# Validate source directories
 if [ ! -d "$MAXWELL_SOURCE" ]; then
     echo "❌ Maxwell source not found: $MAXWELL_SOURCE"
     exit 1
 fi
 
-# Check required components
-echo "🔍 Validating Maxwell components..."
-MISSING_COMPONENTS=()
-
-# Check Maxwell agent
-if [ ! -f "$MAXWELL_SOURCE/agent/maxwell.md" ]; then
-    MISSING_COMPONENTS+=("agent/maxwell.md")
-fi
-
-# Check specialized skills
-REQUIRED_SKILLS=("maxwell-meta" "maxwell-knowledge" "maxwell-librarian")
-for skill in "${REQUIRED_SKILLS[@]}"; do
-    if [ ! -d "$MAXWELL_SOURCE/skills/$skill" ]; then
-        MISSING_COMPONENTS+=("skills/$skill")
-    fi
-done
-
-if [ ${#MISSING_COMPONENTS[@]} -gt 0 ]; then
-    echo "❌ Missing required components:"
-    for component in "${MISSING_COMPONENTS[@]}"; do
-        echo "   - $component"
-    done
+if [ ! -d "$MAXWELL_DATA" ]; then
+    echo "❌ Maxwell data not found: $MAXWELL_DATA"
     exit 1
 fi
 
-echo "   ✅ Maxwell Agent Found"
-echo "   ✅ Specialized Skills Found: ${#REQUIRED_SKILLS[@]} skills"
+# 1. Clean up old Maxwell installations
+echo "🧹 Cleaning old Maxwell installations..."
+rm -rf "$DEST_SKILLS/maxwell-knowledge" 2>/dev/null || true
+rm -rf "$DEST_SKILLS/maxwell-librarian" 2>/dev/null || true
+rm -rf "$DEST_SKILLS/maxwell-meta" 2>/dev/null || true
+rm -rf "$DEST_SKILLS/maxwell" 2>/dev/null || true
+rm -rf "$DEST_DISCOVERIES" 2>/dev/null || true
+if [ -f "$HOME/.claude/resources/databases/maxwell.db" ]; then
+    mv "$HOME/.claude/resources/databases/maxwell.db" \
+       "$HOME/.claude/resources/databases/maxwell-v3-ARCHIVED.db" 2>/dev/null || true
+fi
+echo "   ✅ Old installations cleaned"
 
-# 1. Create directories
-echo ""
-echo "📁 Creating required directories..."
-mkdir -p "$LOCAL_SKILL_DIR"
-mkdir -p "$LOCAL_AGENT_DIR"
+# 2. Create directories
+echo "📁 Creating directories..."
+mkdir -p "$DEST_SKILLS"
+mkdir -p "$DEST_DISCOVERIES"
+echo "   ✅ Directories created"
 
-# 2. Remove old installations (cleanup)
-echo "🧹 Cleaning up old installations..."
-echo "   Removing: Old unified skill, central knowledge base, and legacy skills"
-rm -rf "$LOCAL_SKILL_DIR/maxwell-knowledge" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/maxwell-knowledge-base" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/maxwell-meta" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/maxwell-knowledge" 2>/dev/null || true
-# Clean up old redundant skills (these are deprecated in favor of centralized knowledge)
-rm -rf "$LOCAL_SKILL_DIR/maxwell-pointfree" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/maxwell-shareplay" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/maxwell-swift" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/maxwell-visionos" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/maxwell-librarian" 2>/dev/null || true
-# Remove old skill-* prefixed versions
-rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-tca" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-architecture" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-shareplay" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/skill-maxwell-visionos" 2>/dev/null || true
-rm -rf "$LOCAL_SKILL_DIR/pointfree-documentation" 2>/dev/null || true
-rm -rf "$LOCAL_AGENT_DIR/maxwell" 2>/dev/null || true
+# 3. Deploy Maxwell skill
+echo "📦 Deploying Maxwell v4.0 skill..."
+if [ ! -d "$MAXWELL_SOURCE/skills/maxwell" ]; then
+    echo "   ❌ Maxwell skill not found at $MAXWELL_SOURCE/skills/maxwell"
+    exit 1
+fi
 
-# 3. Deploy Maxwell Agent Orchestrator
-echo "🎭 Deploying Maxwell Agent Orchestrator..."
-mkdir -p "$LOCAL_AGENT_DIR/maxwell"
-cp -r "$MAXWELL_SOURCE/agent/"* "$LOCAL_AGENT_DIR/maxwell/"
+cp -r "$MAXWELL_SOURCE/skills/maxwell" "$DEST_SKILLS/"
+echo "   ✅ Skill deployed to $DEST_SKILLS/maxwell/"
 
-echo "   ✅ Maxwell Agent: $LOCAL_AGENT_DIR/maxwell/"
+# 4. Deploy discovery data
+echo "📚 Deploying personal discoveries..."
+DISCOVERY_COUNT=$(find "$MAXWELL_DATA" -maxdepth 1 -name "*.md" -type f | wc -l | tr -d ' ')
 
-# 4. Deploy Specialized Skills
-echo ""
-echo "🏗️ Deploying Specialized Skills..."
-
-for skill in "${REQUIRED_SKILLS[@]}"; do
-    skill_name=$(basename "$skill")
-    echo "   Deploying: $skill_name"
-
-    # Create skill directory
-    mkdir -p "$LOCAL_SKILL_DIR/$skill_name"
-    rm -rf "$LOCAL_SKILL_DIR/$skill_name"/*
-
-    # Copy skill files
-    cp -r "$MAXWELL_SOURCE/skills/$skill/"* "$LOCAL_SKILL_DIR/$skill_name/"
-
-    # Copy embedded knowledge if it exists
-    if [ -d "$MAXWELL_SOURCE/skills/$skill/knowledge" ]; then
-        echo "     📚 Copying embedded knowledge for $skill_name"
-        mkdir -p "$LOCAL_SKILL_DIR/$skill_name/knowledge"
-        cp -r "$MAXWELL_SOURCE/skills/$skill/knowledge/"* "$LOCAL_SKILL_DIR/$skill_name/knowledge/"
-        knowledge_count=$(find "$LOCAL_SKILL_DIR/$skill_name/knowledge" -name "*.md" 2>/dev/null | wc -l)
-        echo "       ✅ $knowledge_count knowledge files embedded"
-    else
-        echo "     ⚠️  No embedded knowledge found for $skill_name"
-    fi
-
-    echo "     ✅ $skill_name: $(find "$LOCAL_SKILL_DIR/$skill_name" -name "*.md" | wc -l) files"
-done
-
-# 5. Setup Knowledge Repository
-echo ""
-echo "🧠 Setting up Knowledge Repository..."
-
-# Knowledge repository paths
-KNOWLEDGE_REPO_DIR="/Users/elkraneo/.claude/resources/knowledge/maxwell"
-DATABASE_DIR="/Users/elkraneo/.claude/resources/databases"
-
-# Create directories
-mkdir -p "$KNOWLEDGE_REPO_DIR"
-mkdir -p "$DATABASE_DIR"
-
-# Create knowledge categories
-KNOWLEDGE_CATEGORIES=("smith" "swiftui" "tca" "visionos" "errors" "architecture" "platform-specific")
-for category in "${KNOWLEDGE_CATEGORIES[@]}"; do
-    mkdir -p "$KNOWLEDGE_REPO_DIR/$category"
-done
-
-# Copy Smith documentation if available
-SMITH_SOURCE_PATHS=(
-    "/Volumes/Plutopian/_Developer/Smith-Tools/Smith"
-    "/Volumes/Plutopian/_Developer/_deprecated/Smith/Smith"
-)
-
-for smith_path in "${SMITH_SOURCE_PATHS[@]}"; do
-    if [ -d "$smith_path" ]; then
-        echo "   📚 Copying Smith documentation from $smith_path"
-        find "$smith_path" -name "*.md" -not -name "README.md" -not -name "CONTRIBUTING.md" -not -name "CHANGELOG.md" -exec cp {} "$KNOWLEDGE_REPO_DIR/smith/" \;
-        smith_count=$(find "$KNOWLEDGE_REPO_DIR/smith" -name "*.md" | wc -l)
-        echo "       ✅ $smith_count Smith documents copied"
-        break
-    fi
-done
-
-# Create knowledge repository README
-cat > "$KNOWLEDGE_REPO_DIR/README.md" << 'EOF'
-# Maxwell Knowledge Repository
-
-Central knowledge storage for Maxwell agent system containing all knowledge sources that Maxwell can access for solving developer problems.
-
-## Structure
-```
-smith/                    # Smith framework documentation
-swiftui/                  # SwiftUI patterns and solutions
-tca/                     # The Composable Architecture docs
-visionos/                # visionOS and spatial computing
-errors/                  # Error solutions and debugging
-architecture/            # Software architecture patterns
-platform-specific/       # iOS, macOS, cross-platform patterns
-```
-
-## Adding Knowledge
-1. Place markdown files in appropriate category directory
-2. Run knowledge base update: `python3 maxwell-knowledge-base.py --update`
-3. Database will be automatically rebuilt with new content
-
-## Database Integration
-Knowledge from this repository is automatically imported into:
-- Database: `~/.claude/resources/databases/maxwell.db`
-- Search: SQLite FTS5 with BM25 ranking
-- Performance: <5ms queries across all knowledge
-EOF
-
-# Initialize knowledge base if maxwell-knowledge skill is available
-if [ -f "$LOCAL_SKILL_DIR/maxwell-knowledge/knowledge/maxwell-knowledge-base.py" ]; then
-    echo "   🔧 Initializing Maxwell knowledge base..."
-    cd "$LOCAL_SKILL_DIR/maxwell-knowledge/knowledge"
-    python3 maxwell-knowledge-base.py --update
-
-    # Show knowledge base stats
-    python3 maxwell-knowledge-base.py --stats
+if [ "$DISCOVERY_COUNT" -eq 0 ]; then
+    echo "   ⚠️  No discovery files found in $MAXWELL_DATA"
 else
-    echo "   ⚠️  Maxwell knowledge skill not found, skipping database initialization"
+    cp "$MAXWELL_DATA"/*.md "$DEST_DISCOVERIES/" 2>/dev/null || true
+    echo "   ✅ Deployed $DISCOVERY_COUNT discovery files"
 fi
 
-echo "   ✅ Knowledge Repository: $KNOWLEDGE_REPO_DIR"
-echo "   ✅ Database Directory: $DATABASE_DIR"
+# 5. Verify installation
+echo "🔍 Verifying installation..."
 
-# 6. Knowledge Deployment Summary
-echo ""
-echo "📚 Knowledge Deployment Summary:"
-total_knowledge=0
-for skill in "${REQUIRED_SKILLS[@]}"; do
-    skill_count=$(find "$LOCAL_SKILL_DIR/$skill/knowledge" -name "*.md" 2>/dev/null | wc -l)
-    total_knowledge=$((total_knowledge + skill_count))
-    echo "   ✅ $skill: $skill_count embedded knowledge files"
-done
-echo "   📖 Total Embedded Knowledge: $total_knowledge documents"
+if [ ! -f "$DEST_SKILLS/maxwell/SKILL.md" ]; then
+    echo "   ❌ Skill verification failed: SKILL.md not found"
+    exit 1
+fi
+echo "   ✅ Skill verified"
 
-# Count knowledge repository documents
-repo_knowledge=0
-if [ -d "$KNOWLEDGE_REPO_DIR" ]; then
-    repo_knowledge=$(find "$KNOWLEDGE_REPO_DIR" -name "*.md" | wc -l)
-    echo "   🧠 Knowledge Repository: $repo_knowledge documents"
+INSTALLED_COUNT=$(find "$DEST_DISCOVERIES" -maxdepth 1 -name "*.md" -type f | wc -l | tr -d ' ')
+if [ "$INSTALLED_COUNT" -eq 0 ]; then
+    echo "   ⚠️  No discoveries installed (data directory may be empty)"
+else
+    echo "   ✅ $INSTALLED_COUNT discoveries installed"
 fi
 
-total_system_knowledge=$((total_knowledge + repo_knowledge))
-echo "   📊 Total System Knowledge: $total_system_knowledge documents"
-echo "   🏗️ Architecture: Hybrid - Embedded skill knowledge + Central knowledge repository"
-
-# 6. System Status Report
+# 6. Success summary
 echo ""
-echo "📊 Maxwell v4.0 System Status:"
-echo "   🎭 Maxwell Agent: 1 orchestrator"
-echo "   🏗️ Specialized Skills: ${#REQUIRED_SKILLS[@]} domain skills"
-echo "   📚 Embedded Knowledge: $total_knowledge total documents"
-echo "   🧠 Knowledge Repository: $repo_knowledge documents"
-echo "   📊 Total System Knowledge: $total_system_knowledge documents"
-echo "   💾 Total Storage: $(du -sh "$LOCAL_SKILL_DIR" | cut -f1)"
-
-# 7. Installation Success Summary
+echo "✅ Maxwell v4.0 installed successfully!"
 echo ""
-echo "🎉 Maxwell v4.0 Installation Complete!"
-echo "==================================="
+echo "📍 Locations:"
+echo "   Source: $MAXWELL_SOURCE"
+echo "   Data: $MAXWELL_DATA"
+echo "   Skill: $DEST_SKILLS/maxwell/"
+echo "   Discoveries: $DEST_DISCOVERIES/"
 echo ""
-echo "📦 Components Installed:"
-echo "   ✅ Maxwell Agent: $LOCAL_AGENT_DIR/maxwell/"
-echo "   ✅ Knowledge Base: $LOCAL_SKILL_DIR/maxwell-knowledge/ (with SQLite database integration)"
-echo "   ✅ Meta Expert: $LOCAL_SKILL_DIR/maxwell-meta/ (with embedded self-reflection knowledge)"
-echo "   ✅ Maxwell Librarian: $LOCAL_SKILL_DIR/maxwell-librarian/ (private knowledge base management with duplicate detection)"
-if [ -d "$KNOWLEDGE_REPO_DIR" ]; then
-    echo "   🧠 Knowledge Repository: $KNOWLEDGE_REPO_DIR ($repo_knowledge documents)"
-fi
-echo "   🏗️ Architecture: Hybrid - Embedded skill knowledge + Central knowledge repository + SQLite database + Knowledge base management"
+echo "🎯 Next steps:"
+echo "   1. Ask Claude about Swift/TCA to test Maxwell"
+echo "   2. Maxwell will automatically search your discoveries"
+echo "   3. Add new discoveries to Maxwell-data-private/ then reinstall"
 echo ""
-
-echo "🎯 Maxwell v4.0 Architecture Benefits:"
-echo "   🧠 Specialized Expertise: Each skill focuses on its domain"
-echo "   🔄 Agent Orchestration: Maxwell coordinates cross-domain queries"
-echo "   📊 Size Optimization: Skills stay within memory constraints"
-echo "   🎯 Auto-Triggering: Skills activate on domain keywords"
-echo "   🔗 Mix-and-Match: Agent synthesizes knowledge from multiple skills"
-echo "   📚 Knowledge Management: Librarian prevents bloat with duplicate detection"
-
-echo "💡 Usage Examples:"
-echo "   Single Domain (Skill Auto-Triggered):"
-echo "   Single Comprehensive Knowledge Base:"
-echo "     'TCA reducer compilation error' → Database search across all domains"
-echo "     'SharePlay Spatial Persona integration' → visionOS collaborative patterns"
-echo "     'SwiftUI @StateObject vs @ObservedObject' → SwiftUI lifecycle management"
-echo "     'Smith framework architecture decision' → Framework selection patterns"
-echo "     'Cross-platform TCA implementation' → iOS/macOS/visionOS patterns"
+echo "📚 Documentation:"
+echo "   Skill: $DEST_SKILLS/maxwell/README.md"
+echo "   Discovery policy: $DEST_DISCOVERIES/DISCOVERY-POLICY.md"
 echo ""
-echo "   Knowledge Base Management (Manual Librarian Invocation):"
-echo "     '/skill maxwell-librarian import \"/path/to/docs\" \"LibraryName\"' → Import with duplicate detection"
-echo "     '/skill maxwell-librarian check-duplicates \"/path/to/docs\" \"LibraryName\"' → Analyze before import"
-echo "     '/skill maxwell-librarian validate \"LibraryName\"' → Quality validation"
-echo "     '/skill maxwell-librarian health' → Knowledge base health check"
-
-echo "🚀 Streamlined Maxwell Architecture:"
-echo "   🎭 Single Maxwell agent with 3 integrated skills"
-echo "   🧠 Comprehensive knowledge database (122+ documents, 129K+ words)"
-echo "   🧭 Self-reflection and coordination capabilities"
-echo "   ⚡ Sub-millisecond search across all knowledge domains"
-echo "   📚 Knowledge base management with duplicate prevention"
-
-echo "🔧 Knowledge Base Coverage:"
-echo "   🔥 TCA & Point-Free: Comprehensive patterns, testing, dependency injection"
-echo "   🚀 SharePlay: Collaborative experiences, Spatial Personas, GroupActivities"
-echo "   👁️ visionOS: Spatial computing, RealityKit, immersive experiences"
-echo "   🌟 SwiftUI: State management, lifecycle, performance patterns"
-echo "   🏗️ Smith Framework: Architecture decisions, validation, tooling"
-echo "   🐛 Error Resolution: Compilation fixes, debugging, common issues"
-echo "   📚 Knowledge Management: Duplicate detection, quality validation, import automation"
-
-echo "🎯 Ready for Comprehensive Knowledge Queries!"
-echo "   • Single Database: All knowledge accessible in one place"
-echo "   • Cross-Domain: Automatic knowledge synthesis across all areas"
-echo "   • Meta-Capabilities: Self-reflection and iterative problem-solving"
-echo "   • Knowledge Management: Safe import with duplicate detection and quality validation"
-
-echo "🔗 Quick Test:"
-echo "   Ask Claude: 'TCA reducer compilation error with @StateObject' (Comprehensive database search)"
-echo "   Ask Claude: 'visionOS SharePlay Spatial Persona integration' (Multi-domain patterns)"
-echo "   Ask Claude: 'SwiftUI state management best practices' (Complete lifecycle guidance)"
-echo "   Test Librarian: '/skill maxwell-librarian health' (Knowledge base health check)"
+echo "🔄 To update:"
+echo "   1. Add new discoveries to Maxwell-data-private/"
+echo "   2. Commit changes: git add *.md && git commit && git push"
+echo "   3. Reinstall: cd $MAXWELL_SOURCE && ./install.sh"
