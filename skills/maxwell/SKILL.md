@@ -1,18 +1,7 @@
 ---
-name: Maxwell
-description: Personal discovery knowledge base for Swift/TCA development. Auto-activates for Swift/TCA questions to search documented case studies and debugging patterns in ~/.claude/resources/discoveries/
-tags:
-  - "Smith"
-  - "discoveries"
-  - "Swift"
-  - "TCA"
-  - "debugging"
-  - "case studies"
-  - "visionOS"
-  - "SwiftUI"
-allowed-tools: [Grep, Read, Glob]
-version: "4.0.0"
-author: "Claude Code Skill - Simplified Architecture"
+name: maxwell
+description: Personal Swift/TCA case studies and debugging discoveries. Use for past problem patterns, TCA reducer architecture, debugging approaches you've encountered before. Searches personal knowledge base at ~/.claude/resources/discoveries/. Does NOT cover Apple framework APIs (use sosumi) or third-party packages (use scully).
+allowed-tools: Grep, Read, Glob
 ---
 
 # Maxwell - Personal Discovery Knowledge Base
