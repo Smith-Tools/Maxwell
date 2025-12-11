@@ -1,17 +1,20 @@
 ---
 name: maxwell
-description: Personal Swift/TCA case studies and debugging discoveries. Use for past problem patterns, TCA reducer architecture, debugging approaches you've encountered before. Searches personal knowledge base at ~/.claude/resources/discoveries/. Does NOT cover Apple framework APIs (use sosumi) or third-party packages (use scully).
-allowed-tools: Grep, Read, Glob
+description: The Smith Tools Orchestrator. Primary entry point for complex queries. Accesses personal discoveries (grep), Apple documentation (via sosumi status), and Point-Free tutorials (via pointfree CLI). Capable of multi-step reasoning and gathering context from multiple sources.
+allowed-tools: Grep, Read, Glob, Bash
 ---
 
-# Maxwell - Personal Discovery Knowledge Base
+# Maxwell - The Orchestrator
 
-**Purpose:** Provide instant access to personal Swift/TCA discoveries and case studies
+**Purpose:** Your proactive engineering partner. Coordinators knowledge retrieval across all domains (Personal, Apple, Point-Free).
 
-## When to Use This Skill
+## When to Use Maxwell
 
-Auto-activates when user asks about:
-- Swift development patterns
+**ALWAYS** the first port of call for complex questions involving:
+- 🧩 Architectural decisions (integrating multiple patterns)
+- 🍎 Apple Frameworks + TCA (how they work together)
+- 🎓 Learning new concepts (searches WWDC + Point-Free)
+- 🐞 Debugging (searches known issues + personal discoveries)
 - TCA (The Composable Architecture) issues
 - Smith framework architecture
 - Debugging visionOS/SwiftUI problems
@@ -30,24 +33,30 @@ Grep:
   -i: true  # Case insensitive
 ```
 
-### Step 2: Read Specific Discovery
+### Step 2: Search External Knowledge (RAG)
 
-Once you find a relevant discovery, read it:
+Maxwell can query external knowledge bases directly.
+
+**Search Point-Free Video Tutorials:**
+```bash
+pointfree rag-search "dependency injection with tca" --limit 5
+```
+
+**Search Apple Documentation & WWDC (Sosumi):**
+```bash
+sosumi rag-search "realitykit timeline animation" --limit 5
+```
+
+### Step 3: Read Specific Content
+
+**Read Personal Discovery:**
 ```
 Read:
-  file_path: "~/.claude/resources/discoveries/DISCOVERY-14-NESTED-REDUCER-GOTCHAS.md"
+  file_path: "~/.claude/resources/discoveries/DISCOVERY-14.md"
 ```
 
-### Step 3: Search Within Discovery
-
-If you need more context from a discovery:
-```
-Grep:
-  pattern: "<specific pattern>"
-  path: "~/.claude/resources/discoveries/DISCOVERY-14-NESTED-REDUCER-GOTCHAS.md"
-  output_mode: "content"
-  -C: 10  # Show 10 lines of context
-```
+**Read External Content:**
+Use `Read` on file paths returned by `rag-search`.
 
 ## Discovery Organization
 
@@ -101,17 +110,16 @@ Glob:
 
 ## What This Skill Provides
 
-✅ **Personal Knowledge** - Your documented discoveries, not third-party docs
-✅ **Production-Tested** - Real solutions from actual projects
-✅ **Context-Rich** - Case studies with reasoning, not just code snippets
-✅ **Always Fresh** - Files are source of truth, no import/sync needed
-✅ **Git-Tracked** - Version controlled, diffable, blameable
+✅ **Orchestration** - Connects personal patterns with external docs
+✅ **Unified Search** - Point-Free, WWDC, Apple Docs, and Local Discoveries
+✅ **Reasoning** - Synthesizes answers from multiple sources
+✅ **Context-Awareness** - Understands project architecture validation
 
-## What This Skill Does NOT Provide
+## Tool Delegation
 
-❌ **Third-party documentation** - Use `sosumi` skill for Apple docs
-❌ **TCA reference docs** - Use WebSearch for latest TCA documentation
-❌ **General Swift questions** - Use reasoning or WebSearch
+- **Build/Dependencies:** Delegates to `smith analyze` / `smith dependencies`
+- **Apple Docs:** Uses `sosumi` CLI for retrieval
+- **Point-Free:** Uses `pointfree` CLI for retrieval
 
 ## Maintenance
 
