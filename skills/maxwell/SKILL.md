@@ -1,12 +1,18 @@
 ---
 name: maxwell
-description: The Smith Tools Orchestrator. Primary entry point for complex queries. Accesses personal discoveries (grep), Apple documentation (via sosumi status), and Point-Free tutorials (via pointfree CLI). Capable of multi-step reasoning and gathering context from multiple sources.
+description: Knowledge synthesizer for Swift development. Accesses personal discoveries, Apple documentation (sosumi), package docs (scully), and Point-Free tutorials. Multi-source pattern guidance and debugging support.
 allowed-tools: Grep, Read, Glob, Bash
 ---
 
-# Maxwell - The Orchestrator
+# Maxwell - Knowledge Synthesizer
 
-**Purpose:** Your proactive engineering partner. Coordinators knowledge retrieval across all domains (Personal, Apple, Point-Free).
+**Reference**: 
+- https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview
+- `/Volumes/Plutonian/_Developer/Smith-Tools/ARCHITECTURE.md` (canonical architecture)
+
+**Swift Version**: 6.2+ required (strict concurrency)
+
+**Purpose:** Your proactive engineering partner. Synthesizes knowledge retrieval across all domains (Personal Discoveries, Apple Frameworks, Point-Free, Third-Party Packages).
 
 ## When to Use Maxwell
 
@@ -22,7 +28,7 @@ allowed-tools: Grep, Read, Glob, Bash
 
 ## How to Search Discoveries
 
-### Step 1: Search for Relevant Discoveries
+### Step 1: Search Personal Discoveries
 
 Use Grep tool to search all discoveries:
 ```
@@ -33,19 +39,31 @@ Grep:
   -i: true  # Case insensitive
 ```
 
-### Step 2: Search External Knowledge (RAG)
+### Step 2: Semantic Search via RAG Engine (smith-rag)
 
-Maxwell can query external knowledge bases directly.
+Maxwell integrates with **SmithRAG** - a semantic search engine with MLX embeddings (Qwen3 1024d vectors) running on Apple Silicon GPU.
 
-**Search Point-Free Video Tutorials:**
+**Search Apple Documentation & WWDC (via sosumi database):**
 ```bash
-pointfree rag-search "dependency injection with tca" --limit 5
+rag search "SwiftUI state management with Observable" --database ~/.smith/rag/sosumi.db --limit 10
 ```
 
-**Search Apple Documentation & WWDC (Sosumi):**
+**Search Personal Discoveries (via maxwell database):**
 ```bash
-sosumi rag-search "realitykit timeline animation" --limit 5
+rag search "TCA navigation patterns I've used before" --database ~/.smith/rag/maxwell.db --limit 5
 ```
+
+**Search Third-Party Package Docs (via scully database):**
+```bash
+rag search "dependency injection with Composable Architecture" --database ~/.smith/rag/scully.db --limit 8
+```
+
+**Features:**
+- Semantic search (understands meaning, not just keywords)
+- MLX Reranking for relevance
+- 1024d embeddings (Qwen3-Embedding-0.6B-4bit)
+- Runs entirely offline on Apple Silicon GPU
+- FTS5 fallback for non-vector searches
 
 ### Step 3: Read Specific Content
 
