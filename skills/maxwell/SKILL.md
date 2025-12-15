@@ -1,62 +1,53 @@
 ---
 name: maxwell
-description: Knowledge synthesizer for Swift development. Accesses personal discoveries, Apple documentation (sosumi), package docs (scully), and Point-Free tutorials. Multi-source pattern guidance and debugging support.
+description: Knowledge synthesizer for Swift development. Accesses WWDC transcripts, Apple docs, Point-Free, and personal discoveries via semantic search.
 allowed-tools: Grep, Read, Glob, Bash
 ---
 
 # Maxwell - Knowledge Synthesizer
 
-**Reference**: 
-- https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview
-- `/Volumes/Plutonian/_Developer/Smith-Tools/ARCHITECTURE.md` (canonical architecture)
+> **CRITICAL: ALWAYS search RAG FIRST before using web search.**
 
-**Swift Version**: 6.2+ required (strict concurrency)
+## Step 1: ALWAYS Start With RAG Search
 
-**Purpose:** Your proactive engineering partner. Synthesizes knowledge retrieval across all domains (Personal Discoveries, Apple Frameworks, Point-Free, Third-Party Packages).
+For ANY question about Apple frameworks, SwiftUI, RealityKit, visionOS, or Swift:
 
-## When to Use Maxwell
+```bash
+rag search "<user's question>" --database /Volumes/Plutonian/_Developer/Smith-Tools/sosumi-data-private/Outputs/complete_rag.db --limit 10
+```
 
-**ALWAYS** the first port of call for complex questions involving:
-- 🧩 Architectural decisions (integrating multiple patterns)
-- 🍎 Apple Frameworks + TCA (how they work together)
-- 🎓 Learning new concepts (searches WWDC + Point-Free)
-- 🐞 Debugging (searches known issues + personal discoveries)
-- TCA (The Composable Architecture) issues
-- Smith framework architecture
-- Debugging visionOS/SwiftUI problems
-- Green Spurt project patterns
+This searches 12,500+ WWDC transcript chunks with 1024d semantic embeddings. **Do this BEFORE web search.**
 
-## How to Search Discoveries
+**Examples:**
+```bash
+# Animation question
+rag search "Reality Composer Pro animation timeline" --database /Volumes/Plutonian/_Developer/Smith-Tools/sosumi-data-private/Outputs/complete_rag.db --limit 10
 
-### Step 1: Search Personal Discoveries
+# SwiftUI question  
+rag search "Observable macro SwiftUI state" --database /Volumes/Plutonian/_Developer/Smith-Tools/sosumi-data-private/Outputs/complete_rag.db --limit 10
 
-Use Grep tool to search all discoveries:
+# RealityKit question
+rag search "RealityKit AnimationResource playback" --database /Volumes/Plutonian/_Developer/Smith-Tools/sosumi-data-private/Outputs/complete_rag.db --limit 10
+```
+
+## Step 2: Search Personal Discoveries (Optional)
+
+Use Grep to search local discoveries:
 ```
 Grep:
   pattern: "<search term>"
   path: "~/.claude/resources/discoveries"
-  output_mode: "files_with_matches"
-  -i: true  # Case insensitive
+  -i: true
 ```
 
-### Step 2: Semantic Search via RAG Engine (smith-rag)
+## When to Use Maxwell
 
-Maxwell integrates with **SmithRAG** - a semantic search engine with MLX embeddings (Qwen3 1024d vectors) running on Apple Silicon GPU.
+**ALWAYS** for complex questions involving:
+- 🍎 Apple Frameworks (SwiftUI, RealityKit, visionOS)
+- 🎓 WWDC sessions and transcripts
+- 🧩 Architectural decisions
+- 🐞 Debugging Apple platform issues
 
-**Search Apple Documentation & WWDC (via sosumi database):**
-```bash
-rag search "SwiftUI state management with Observable" --database ~/.smith/rag/sosumi.db --limit 10
-```
-
-**Search Personal Discoveries (via maxwell database):**
-```bash
-rag search "TCA navigation patterns I've used before" --database ~/.smith/rag/maxwell.db --limit 5
-```
-
-**Search Third-Party Package Docs (via scully database):**
-```bash
-rag search "dependency injection with Composable Architecture" --database ~/.smith/rag/scully.db --limit 8
-```
 
 **Features:**
 - Semantic search (understands meaning, not just keywords)
