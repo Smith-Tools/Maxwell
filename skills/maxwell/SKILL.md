@@ -13,7 +13,7 @@ allowed-tools: Grep, Read, Glob, Bash
 For ANY question about Apple frameworks, SwiftUI, RealityKit, visionOS, or Swift:
 
 ```bash
-rag search "<user's question>" --database /Volumes/Plutonian/_Developer/Smith-Tools/sosumi-data-private/Outputs/complete_rag.db --limit 10
+rag search "<user's question>" --database ~/.smith/rag/sosumi.db --limit 10
 ```
 
 This searches 12,500+ WWDC transcript chunks with 1024d semantic embeddings. **Do this BEFORE web search.**
@@ -21,13 +21,13 @@ This searches 12,500+ WWDC transcript chunks with 1024d semantic embeddings. **D
 **Examples:**
 ```bash
 # Animation question
-rag search "Reality Composer Pro animation timeline" --database /Volumes/Plutonian/_Developer/Smith-Tools/sosumi-data-private/Outputs/complete_rag.db --limit 10
+rag search "Reality Composer Pro animation timeline" --database ~/.smith/rag/sosumi.db --limit 10
 
 # SwiftUI question  
-rag search "Observable macro SwiftUI state" --database /Volumes/Plutonian/_Developer/Smith-Tools/sosumi-data-private/Outputs/complete_rag.db --limit 10
+rag search "Observable macro SwiftUI state" --database ~/.smith/rag/sosumi.db --limit 10
 
 # RealityKit question
-rag search "RealityKit AnimationResource playback" --database /Volumes/Plutonian/_Developer/Smith-Tools/sosumi-data-private/Outputs/complete_rag.db --limit 10
+rag search "RealityKit AnimationResource playback" --database ~/.smith/rag/sosumi.db --limit 10
 ```
 
 ## Step 2: Search Personal Discoveries (Optional)
