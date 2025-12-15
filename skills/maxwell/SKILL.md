@@ -1,52 +1,47 @@
 ---
 name: maxwell
-description: Knowledge synthesizer for Swift development. Accesses WWDC transcripts, Apple docs, Point-Free, and personal discoveries via semantic search.
-allowed-tools: Grep, Read, Glob, Bash
+description: WWDC & Apple docs semantic search. ALWAYS run `rag search` first via Bash.
+allowed-tools: Bash, Read, Grep, Glob
 ---
 
-# Maxwell - Knowledge Synthesizer
+# Maxwell - Apple Developer Knowledge
 
-> **CRITICAL: ALWAYS search RAG FIRST before using web search.**
+## ⚠️ MANDATORY: Run RAG Search First
 
-## Step 1: ALWAYS Start With RAG Search
-
-For ANY question about Apple frameworks, SwiftUI, RealityKit, visionOS, or Swift:
+**DO NOT skip this step. DO NOT use Grep first. Run this Bash command BEFORE anything else:**
 
 ```bash
 rag search "<user's question>" --database ~/.smith/rag/sosumi.db --limit 10
 ```
 
-This searches 12,500+ WWDC transcript chunks with 1024d semantic embeddings. **Do this BEFORE web search.**
+This is a semantic search over 12,500+ WWDC transcript chunks. It understands meaning, not just keywords.
 
-**Examples:**
+**Example - if user asks about animations:**
 ```bash
-# Animation question
 rag search "Reality Composer Pro animation timeline" --database ~/.smith/rag/sosumi.db --limit 10
-
-# SwiftUI question  
-rag search "Observable macro SwiftUI state" --database ~/.smith/rag/sosumi.db --limit 10
-
-# RealityKit question
-rag search "RealityKit AnimationResource playback" --database ~/.smith/rag/sosumi.db --limit 10
 ```
 
-## Step 2: Search Personal Discoveries (Optional)
+**Example - if user asks about SwiftUI:**
+```bash
+rag search "Observable macro SwiftUI" --database ~/.smith/rag/sosumi.db --limit 10
+```
 
-Use Grep to search local discoveries:
+## After RAG Search
+
+Only after running `rag search`, you may optionally search personal discoveries:
+
 ```
 Grep:
-  pattern: "<search term>"
+  pattern: "<term>"
   path: "~/.claude/resources/discoveries"
-  -i: true
 ```
 
-## When to Use Maxwell
+## Topics This Skill Covers
 
-**ALWAYS** for complex questions involving:
 - 🍎 Apple Frameworks (SwiftUI, RealityKit, visionOS)
-- 🎓 WWDC sessions and transcripts
-- 🧩 Architectural decisions
-- 🐞 Debugging Apple platform issues
+- 🎓 WWDC sessions (2014-2025)
+- 🧩 Architectural patterns
+
 
 
 **Features:**
