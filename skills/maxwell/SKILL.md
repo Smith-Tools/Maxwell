@@ -1,16 +1,17 @@
 ---
 name: maxwell
-description: Intelligent orchestrator of Apple development knowledge. Routes queries across WWDC (sosumi), functional patterns (pointfree), and personal discoveries. Analyzes questions and synthesizes comprehensive answers from multiple sources.
-allowed-tools: Bash, Grep, Read
+description: Intelligent orchestrator of external Apple development knowledge. Routes queries across WWDC (sosumi) and functional patterns (pointfree). Analyzes questions and synthesizes comprehensive answers from external sources.
+allowed-tools: Bash, Read
 ---
 
-# Maxwell - Knowledge Orchestrator
+# Maxwell - External Knowledge Orchestrator
 
-Maxwell intelligently synthesizes knowledge from multiple sources to answer complex developer questions:
+Maxwell intelligently synthesizes knowledge from external sources to answer complex developer questions:
 
 - **sosumi**: 12,500+ WWDC transcript chunks (2014-2025) - Official Apple guidance
 - **pointfree**: Point-Free episodes - Functional programming patterns, Swift advanced techniques
-- **discoveries**: 50+ personal case studies and team patterns
+
+**Note**: Personal team discoveries are managed by the **scully** skill, not Maxwell.
 
 ## When to Use Maxwell
 
@@ -18,9 +19,11 @@ Maxwell is your go-to for:
 - 🧩 **Architectural questions** - How should I structure this?
 - 🍎 **Framework integration** - How do WWDC recommendations work with my code?
 - 🎓 **Learning concepts** - Show me WWDC + functional patterns on this topic
-- 🐞 **Debugging** - Search known issues and personal discoveries
+- 🐞 **Debugging** - Search for known issues and solutions in WWDC/Point-Free
 - **Complex multi-domain problems** - "How do I sync RealityKit with SwiftUI state?"
-- **Team patterns** - "How have we solved this before?"
+- **Functional programming patterns** - "How do I approach state management functionally?"
+
+For **team patterns and personal discoveries**, use the **scully** skill instead.
 
 ## Orchestration Strategy
 
@@ -47,10 +50,6 @@ Classify the question to determine which knowledge sources are relevant:
 - Pattern + implementation: "functional approach to view state management"
 - Architecture questions spanning frameworks
 
-**Personal discovery indicators** (check discoveries):
-- Team-specific patterns: "How have we solved..."
-- Project learnings: "Past issues with..."
-- Known gotchas: "Trap we found..."
 
 ### Step 2: Route Intelligently
 
@@ -89,13 +88,6 @@ rag search "<query>" --database ~/.smith/rag/pointfree.db --limit 5
 - Swift design patterns
 - Language-level features
 
-**Personal Discoveries**:
-```bash
-grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md"
-```
-- Team-specific learnings
-- Documented gotchas and solutions
-
 ### Step 4: Combine and Interpret
 
 **When combining results**:
@@ -110,34 +102,7 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md"
 - Combine with pointfree insights on functional state management
 - Result: "WWDC recommends X for RealityKit, but here's how to make it composable with functional patterns..."
 
-## How to Search Personal Discoveries
-
-Personal discoveries are your team's documented learnings. Here's how to access them:
-
-### Search All Discoveries by Topic
-```bash
-grep -r "nested reducer" ~/.claude/resources/discoveries/ --include="*.md" -i
-grep -r "RealityKit" ~/.claude/resources/discoveries/ --include="*.md" -i
-grep -r "visionOS" ~/.claude/resources/discoveries/ --include="*.md" -i
-```
-
-### List All Discoveries
-```bash
-ls -1 ~/.claude/resources/discoveries/DISCOVERY-*.md | sort
-```
-
-### Read a Specific Discovery
-```bash
-cat ~/.claude/resources/discoveries/DISCOVERY-14-NESTED-REDUCER-GOTCHAS.md
-```
-
-**Key Discoveries (Quick Reference)**:
-- `DISCOVERY-12-MODULE-BOUNDARY-VIOLATION.md` - Architecture boundaries (850-line reducer anti-pattern)
-- `DISCOVERY-14-NESTED-REDUCER-GOTCHAS.md` - TCA composition patterns
-- `DISCOVERY-15-PRINT-OSLOG-PATTERNS.md` - Logging best practices
-- Plus 45+ other documented case studies covering Swift, TCA, SwiftUI, visionOS, RealityKit
-
-## When to Not Search
+## When to Not Use Maxwell
 
 **Skip Maxwell entirely if**:
 - Question is about API documentation (point them to Developer.apple.com)
@@ -176,19 +141,17 @@ cat ~/.claude/resources/discoveries/DISCOVERY-14-NESTED-REDUCER-GOTCHAS.md
 - **Skip sosumi**: Not an WWDC topic
 - **Result**: Point-Free is authoritative, don't waste context on sosumi
 
-### Example 5: Known Gotcha
-**Query**: "We keep running into race conditions with @Shared state in our app"
-- **Classify**: Personal discovery + sosumi validation
-- **Search discoveries**: Look for "@Shared race condition" patterns
-- **If found**: Present team's known solution
-- **Validate**: Search sosumi for official guidance on @Shared thread safety
-- **Combine**: "Here's how we've handled this, validated against WWDC guidance..."
+### Example 5: Advanced Swift Techniques
+**Query**: "How do I implement parser combinators in Swift?"
+- **Classify**: Point-Free primary (functional programming pattern)
+- **Search pointfree first**: Parser combinator episodes and techniques
+- **Skip sosumi**: Not a WWDC topic
+- **Result**: Point-Free is authoritative for this domain
 
 ## Tools Available
 
 - **Bash**: Execute `rag search` commands to query databases
-- **Read**: Load entire files from discoveries if needed
-- **Grep**: Search personal discoveries when looking for known patterns
+- **Read**: Load full search result chunks for deeper understanding
 
 ## Architecture: Skill vs. CLI
 
@@ -220,11 +183,10 @@ cat ~/.claude/resources/discoveries/DISCOVERY-14-NESTED-REDUCER-GOTCHAS.md
 - **Use**: Functional architecture, language deep dives, design patterns
 - **Engine**: Same MLX + RAG system
 
-### discoveries: Personal Case Studies
-- **Content**: Team-documented patterns and gotchas
-- **Coverage**: Lessons learned, known issues, solutions specific to your team
-- **Use**: When looking for "how have we solved this before?"
-- **Storage**: `~/.claude/resources/discoveries/`
+## Related Skills
+
+- **scully**: Personal discoveries and team patterns (use scully for team-specific learnings)
+- **smith**: Swift/TCA architecture validation and analysis
 
 ## Technical Stack
 
