@@ -41,6 +41,7 @@ echo "   ✅ Old installations cleaned"
 echo "📁 Creating directories..."
 mkdir -p "$DEST_SKILLS"
 mkdir -p "$DEST_DISCOVERIES"
+mkdir -p "$HOME/.local/bin"
 echo "   ✅ Directories created"
 
 # 3. Deploy Maxwell skill
@@ -52,6 +53,25 @@ fi
 
 cp -r "$MAXWELL_SOURCE/skills/maxwell" "$DEST_SKILLS/"
 echo "   ✅ Skill deployed to $DEST_SKILLS/maxwell/"
+
+# 3b. Deploy Maxwell CLI wrapper
+echo "📦 Deploying Maxwell CLI wrapper..."
+if [ ! -f "$MAXWELL_SOURCE/cli/maxwell" ]; then
+    echo "   ⚠️  Maxwell CLI wrapper not found at $MAXWELL_SOURCE/cli/maxwell"
+    echo "   Skipping CLI deployment (not required for basic functionality)"
+else
+    cp "$MAXWELL_SOURCE/cli/maxwell" "$HOME/.local/bin/maxwell"
+    chmod +x "$HOME/.local/bin/maxwell"
+    echo "   ✅ Maxwell CLI deployed to $HOME/.local/bin/maxwell"
+
+    # Add ~/.local/bin to PATH if needed
+    if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
+        echo ""
+        echo "   ⚠️  Note: $HOME/.local/bin is not in your PATH"
+        echo "   Add to your shell profile (.bashrc, .zshrc, etc):"
+        echo "   export PATH=\"\$HOME/.local/bin:\$PATH\""
+    fi
+fi
 
 # 4. Deploy discovery data
 echo "📚 Deploying personal discoveries..."

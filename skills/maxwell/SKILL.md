@@ -1,34 +1,58 @@
 ---
 name: maxwell
-description: WWDC & Apple docs semantic search. Run `rag search` via Bash.
+description: WWDC & Apple docs semantic search. Run `maxwell search` or `rag search` via Bash.
 allowed-tools: Bash, Read
 ---
 
-# Maxwell - Apple Developer Knowledge
+# Maxwell - Apple Developer Knowledge Search
 
-## ⚠️ MANDATORY: Run RAG Search First
+Maxwell provides semantic search over 12,500+ WWDC transcript chunks (2014-2025), understanding meaning not just keywords.
 
-**Run this Bash command BEFORE anything else:**
+## Quick Start
 
+You have two options to search:
+
+### Option 1: Maxwell CLI (Recommended)
 ```bash
-rag search "<user's question>" --database ~/.smith/rag/sosumi.db --limit 10
+maxwell search "RealityKit animation playback"
+maxwell search "SwiftUI Observable macro" --limit 10
+maxwell search "visionOS immersive spaces"
 ```
 
-This is a semantic search over 12,500+ WWDC transcript chunks (2014-2025). It understands meaning, not just keywords.
-
-**Example - animations:**
+### Option 2: Direct RAG Search
 ```bash
-rag search "Reality Composer Pro animation timeline" --database ~/.smith/rag/sosumi.db --limit 10
+rag search "your question" --database ~/.smith/rag/sosumi.db --limit 10
 ```
 
-**Example - SwiftUI:**
+Both commands search the same WWDC transcript database and return identical results.
+
+## Usage Examples
+
+### Animations & Composition
 ```bash
-rag search "Observable macro SwiftUI" --database ~/.smith/rag/sosumi.db --limit 10
+maxwell search "Reality Composer Pro animation timeline"
+maxwell search "AnimationPlaybackController blend shape"
+maxwell search "animation state synchronization" --limit 5
 ```
 
-**Example - RealityKit:**
+### SwiftUI State Management
 ```bash
-rag search "RealityKit AnimationResource playback" --database ~/.smith/rag/sosumi.db --limit 10
+maxwell search "Observable macro SwiftUI"
+maxwell search "SwiftUI state management patterns"
+maxwell search "Bindable Observable"
+```
+
+### RealityKit
+```bash
+maxwell search "RealityKit AnimationResource playback"
+maxwell search "RealityKit entity synchronization"
+maxwell search "Model3D animation controller"
+```
+
+### visionOS
+```bash
+maxwell search "visionOS immersive space integration"
+maxwell search "spatial computing state management"
 ```
 
 ## Topics Covered

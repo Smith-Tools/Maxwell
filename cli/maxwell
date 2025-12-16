@@ -1,0 +1,198 @@
+#!/bin/bash
+
+# Maxwell CLI Wrapper
+# Provides user-friendly interface to search WWDC transcripts and personal discoveries
+#
+# Usage:
+#   maxwell search "<query>"                    # Search WWDC transcripts
+#   maxwell search "<query>" --limit 10         # Limit results
+#   maxwell help                                 # Show help
+
+set -e
+
+# Configuration
+RAG_HOME="${HOME}/.smith/rag"
+SOSUMI_DB="${RAG_HOME}/sosumi.db"
+POINTFREE_DB="${RAG_HOME}/pointfree.db"
+DISCOVERIES_DIR="${HOME}/.claude/resources/discoveries"
+DEFAULT_LIMIT=5
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+# Show usage
+show_help() {
+    cat << EOF
+${BLUE}Maxwell - Apple Developer Knowledge Search${NC}
+
+${GREEN}USAGE:${NC}
+  maxwell <command> [options]
+
+${GREEN}COMMANDS:${NC}
+  search <query>            Search WWDC transcripts and documentation
+                            Examples:
+                              maxwell search "RealityKit animation"
+                              maxwell search "SwiftUI state management"
+                              maxwell search "visionOS immersive spaces"
+
+  discoveries <query>       Search personal discoveries only
+                            (Coming soon)
+
+  help                      Show this help message
+
+${GREEN}OPTIONS:${NC}
+  --limit N                 Limit results to N items (default: $DEFAULT_LIMIT)
+  -h, --help                Show this help message
+
+${GREEN}EXAMPLES:${NC}
+  # Search for RealityKit animation content
+  maxwell search "RealityKit animation playback controller" --limit 10
+
+  # Search for SwiftUI patterns
+  maxwell search "Observable macro SwiftUI" --limit 5
+
+  # Search for visionOS
+  maxwell search "visionOS immersive space integration"
+
+EOF
+}
+
+# Validate rag databases exist
+check_databases() {
+    local has_db=0
+
+    if [ ! -f "$SOSUMI_DB" ]; then
+        echo -e "${YELLOW}⚠️  WWDC database not found: $SOSUMI_DB${NC}"
+    else
+        has_db=1
+    fi
+
+    if [ ! -f "$POINTFREE_DB" ]; then
+        echo -e "${YELLOW}⚠️  Point-Free database not found: $POINTFREE_DB${NC}"
+    else
+        has_db=1
+    fi
+
+    if [ "$has_db" -eq 0 ]; then
+        echo -e "${RED}❌ Error: No RAG databases found${NC}"
+        echo ""
+        echo "   Maxwell requires smith-rag databases."
+        echo "   Make sure smith-rag is installed and databases are initialized:"
+        echo "   ${YELLOW}https://github.com/anthropics/smith-tools${NC}"
+        exit 1
+    fi
+}
+
+# Orchestrate searches across multiple knowledge sources
+orchestrate_search() {
+    local query="$1"
+    local limit="${2:-$DEFAULT_LIMIT}"
+
+    if [ -z "$query" ]; then
+        echo -e "${RED}❌ Error: query required${NC}"
+        echo ""
+        show_help
+        exit 1
+    fi
+
+    check_databases
+
+    echo -e "${BLUE}🔍 Maxwell: Orchestrating knowledge sources...${NC}"
+    echo -e "${BLUE}Query: \"$query\"${NC}"
+    echo -e "${BLUE}Searching: WWDC (sosumi) + Point-Free${NC}\n"
+
+    # Create temporary files for results
+    local temp_sosumi=$(mktemp)
+    local temp_pointfree=$(mktemp)
+    local merged_results=$(mktemp)
+
+    # Search sosumi (WWDC & Apple)
+    if [ -f "$SOSUMI_DB" ]; then
+        echo -e "${GREEN}📚 Searching WWDC (sosumi)...${NC}"
+        rag search "$query" --database "$SOSUMI_DB" --limit "$limit" > "$temp_sosumi" 2>&1 || true
+    fi
+
+    # Search pointfree
+    if [ -f "$POINTFREE_DB" ]; then
+        echo -e "${GREEN}📚 Searching Point-Free (pointfree)...${NC}"
+        rag search "$query" --database "$POINTFREE_DB" --limit "$limit" > "$temp_pointfree" 2>&1 || true
+    fi
+
+    echo ""
+    echo -e "${BLUE}=== RESULTS ===${NC}\n"
+
+    # Output sosumi results
+    if [ -f "$SOSUMI_DB" ] && [ -s "$temp_sosumi" ]; then
+        echo -e "${GREEN}📕 From WWDC & Apple (sosumi):${NC}"
+        head -30 "$temp_sosumi" | grep -v "info smith-rag" || true
+        echo ""
+    fi
+
+    # Output pointfree results
+    if [ -f "$POINTFREE_DB" ] && [ -s "$temp_pointfree" ]; then
+        echo -e "${GREEN}📗 From Point-Free (pointfree):${NC}"
+        head -30 "$temp_pointfree" | grep -v "info smith-rag" || true
+        echo ""
+    fi
+
+    # Cleanup
+    rm -f "$temp_sosumi" "$temp_pointfree" "$merged_results"
+}
+
+# Main CLI logic
+main() {
+    case "${1:-help}" in
+        search)
+            shift  # Remove 'search' from args
+            local query=""
+            local limit="$DEFAULT_LIMIT"
+
+            # Parse arguments
+            while [[ $# -gt 0 ]]; do
+                case "$1" in
+                    --limit)
+                        limit="$2"
+                        shift 2
+                        ;;
+                    -h|--help)
+                        show_help
+                        exit 0
+                        ;;
+                    *)
+                        if [ -z "$query" ]; then
+                            query="$1"
+                        fi
+                        shift
+                        ;;
+                esac
+            done
+
+            orchestrate_search "$query" "$limit"
+            ;;
+
+        discoveries)
+            echo -e "${YELLOW}⚠️  Personal discoveries coming soon${NC}"
+            echo ""
+            echo "For now, search for knowledge in: $DISCOVERIES_DIR"
+            ls -1 "$DISCOVERIES_DIR" 2>/dev/null | head -10
+            exit 1
+            ;;
+
+        help|-h|--help)
+            show_help
+            ;;
+
+        *)
+            echo -e "${RED}❌ Unknown command: $1${NC}\n"
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+# Run
+main "$@"
