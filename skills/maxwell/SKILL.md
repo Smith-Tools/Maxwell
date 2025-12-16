@@ -1,17 +1,16 @@
 ---
 name: maxwell
-description: Intelligent orchestrator of external Apple development knowledge. Routes queries across WWDC (sosumi) and functional patterns (pointfree). Analyzes questions and synthesizes comprehensive answers from external sources.
-allowed-tools: Bash, Read
+description: Intelligent orchestrator of all development knowledge. Routes queries across WWDC (sosumi), functional patterns (pointfree), and personal discoveries (scully). Analyzes questions and synthesizes comprehensive answers from all available sources.
+allowed-tools: Bash, Grep, Read
 ---
 
-# Maxwell - External Knowledge Orchestrator
+# Maxwell - Knowledge Orchestrator
 
-Maxwell intelligently synthesizes knowledge from external sources to answer complex developer questions:
+Maxwell intelligently orchestrates across all knowledge sources to answer complex developer questions:
 
 - **sosumi**: 12,500+ WWDC transcript chunks (2014-2025) - Official Apple guidance
 - **pointfree**: Point-Free episodes - Functional programming patterns, Swift advanced techniques
-
-**Note**: Personal team discoveries are managed by the **scully** skill, not Maxwell.
+- **scully**: Personal discoveries and team case studies - Your documented learnings
 
 ## When to Use Maxwell
 
@@ -19,11 +18,10 @@ Maxwell is your go-to for:
 - 🧩 **Architectural questions** - How should I structure this?
 - 🍎 **Framework integration** - How do WWDC recommendations work with my code?
 - 🎓 **Learning concepts** - Show me WWDC + functional patterns on this topic
-- 🐞 **Debugging** - Search for known issues and solutions in WWDC/Point-Free
+- 🐞 **Debugging** - Search known issues in WWDC, Point-Free, and team discoveries
 - **Complex multi-domain problems** - "How do I sync RealityKit with SwiftUI state?"
 - **Functional programming patterns** - "How do I approach state management functionally?"
-
-For **team patterns and personal discoveries**, use the **scully** skill instead.
+- **Team learnings** - "How have we solved this before?"
 
 ## Orchestration Strategy
 
@@ -45,10 +43,17 @@ Classify the question to determine which knowledge sources are relevant:
 - Swift language deep dives
 - Abstract mathematics in Swift
 
-**Multi-source questions** (search both strategically):
+**Scully-primary indicators** (search discoveries first):
+- Team-specific patterns: "How have we solved..."
+- Project learnings: "We discovered...", "We ran into..."
+- Known gotchas: "Trap we hit...", "Edge case we found..."
+- Team architectural decisions
+
+**Multi-source questions** (search strategically):
 - Cross-domain: "How do I sync RealityKit with SwiftUI state?"
 - Pattern + implementation: "functional approach to view state management"
 - Architecture questions spanning frameworks
+- "How does WWDC guidance match what we've learned?"
 
 
 ### Step 2: Route Intelligently
@@ -87,6 +92,14 @@ rag search "<query>" --database ~/.smith/rag/pointfree.db --limit 5
 - Functional programming, advanced Swift techniques
 - Swift design patterns
 - Language-level features
+
+**Personal Discoveries (scully)** - If available:
+```bash
+grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
+```
+- Team-specific learnings and case studies
+- Known issues and solutions
+- Documented gotchas
 
 ### Step 4: Combine and Interpret
 
@@ -141,7 +154,15 @@ rag search "<query>" --database ~/.smith/rag/pointfree.db --limit 5
 - **Skip sosumi**: Not an WWDC topic
 - **Result**: Point-Free is authoritative, don't waste context on sosumi
 
-### Example 5: Advanced Swift Techniques
+### Example 5: Team Pattern Lookup
+**Query**: "How have we handled @Shared race conditions before?"
+- **Classify**: Scully primary (team-specific learning)
+- **Search discoveries first**: Look for @Shared or race condition patterns
+- **If found**: Present team's documented solution
+- **Optional**: Search sosumi for official thread safety guidance
+- **Result**: Team pattern validated against WWDC guidance
+
+### Example 6: Advanced Swift Techniques
 **Query**: "How do I implement parser combinators in Swift?"
 - **Classify**: Point-Free primary (functional programming pattern)
 - **Search pointfree first**: Parser combinator episodes and techniques
@@ -150,24 +171,26 @@ rag search "<query>" --database ~/.smith/rag/pointfree.db --limit 5
 
 ## Tools Available
 
-- **Bash**: Execute `rag search` commands to query databases
-- **Read**: Load full search result chunks for deeper understanding
+- **Bash**: Execute `rag search` commands to query sosumi/pointfree databases
+- **Grep**: Search personal discoveries in `~/.claude/resources/discoveries/`
+- **Read**: Load full search result chunks or discovery files for deeper understanding
 
 ## Architecture: Skill vs. CLI
 
-**This Skill (Maxwell)**: Provides intelligent guidance on orchestrating knowledge sources
-- Runs automatically when you ask Apple development questions
-- Analyzes your query to determine which sources are relevant
-- Routes searches intelligently to avoid noise
-- Combines results from multiple sources for comprehensive answers
+**This Skill (Maxwell)**: Intelligent orchestrator of all knowledge sources
+- Runs automatically when you ask development questions
+- Analyzes your query to determine which sources are most relevant
+- Routes searches intelligently: sosumi (WWDC), pointfree (patterns), scully (team learnings)
+- Combines results thoughtfully - avoiding noise while being comprehensive
+- Example: "How do we handle X?" searches discoveries first, then validates against WWDC
 
-**Maxwell CLI (`maxwell search`)**: Simple convenience tool for direct queries
+**Maxwell CLI (`maxwell search`)**: Simple convenience tool for direct multi-source searches
 - Available at `~/.local/bin/maxwell`
-- Searches all available databases
-- Useful for quick lookups
-- Not a replacement for the intelligent Skill
+- Searches all available databases at once
+- Useful for quick exploratory searches
+- Not intelligent routing - just parallel search of all sources
 
-**Recommended**: Let this Skill handle complex questions - it will orchestrate intelligently. Use the CLI only for quick searches where you already know which source you want.
+**Recommended**: Let this Skill handle your questions - it will orchestrate intelligently. Use the CLI only for exploratory searches where you want all sources combined.
 
 ## Knowledge Sources
 
@@ -185,12 +208,14 @@ rag search "<query>" --database ~/.smith/rag/pointfree.db --limit 5
 
 ## Related Skills
 
-- **scully**: Personal discoveries and team patterns (use scully for team-specific learnings)
-- **smith**: Swift/TCA architecture validation and analysis
+- **smith**: Swift/TCA architecture validation and analysis (complements Maxwell's guidance)
 
 ## Technical Stack
 
-- **Search Engine**: SmithRAG (semantic search)
+- **Search Engine**: SmithRAG (semantic search for RAG databases)
 - **Embeddings**: MLX Qwen3-Embedding-0.6B-4bit (1024d vectors)
 - **Execution**: Offline on Apple Silicon GPU (no external API calls)
-- **Databases**: `~/.smith/rag/sosumi.db`, `~/.smith/rag/pointfree.db`
+- **Knowledge Bases**:
+  - `~/.smith/rag/sosumi.db` - WWDC transcripts
+  - `~/.smith/rag/pointfree.db` - Point-Free episodes
+  - `~/.claude/resources/discoveries/` - Personal discoveries (file-based, searched via Grep)
