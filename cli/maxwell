@@ -1,11 +1,14 @@
 #!/bin/bash
 
 # Maxwell CLI Wrapper
-# Provides user-friendly interface to search WWDC transcripts and personal discoveries
+# Convenience tool for direct searches across multiple knowledge sources
+#
+# Note: For intelligent orchestration, let the Maxwell Skill handle your questions.
+# This CLI is best for quick lookups when you already know which source you want.
 #
 # Usage:
-#   maxwell search "<query>"                    # Search WWDC transcripts
-#   maxwell search "<query>" --limit 10         # Limit results
+#   maxwell search "<query>"                    # Search all sources
+#   maxwell search "<query>" --limit 10         # Limit results per source
 #   maxwell help                                 # Show help
 
 set -e
