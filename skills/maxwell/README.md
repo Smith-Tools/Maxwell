@@ -151,6 +151,7 @@ rm -rf ~/.claude/skills/maxwell
 ### Solution with v4.0
 
 1. **All 44 personal discoveries accessible** - Every personal case study is indexed
+
 2. **Simple infrastructure** - Just files and built-in tools
 3. **No maintenance** - Edit files, Git tracks changes
 4. **Accessible** - Part of Smith-Tools repo, installed via script

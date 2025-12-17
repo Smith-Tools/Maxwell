@@ -9,7 +9,7 @@ allowed-tools: Bash, Grep, Read
 Maxwell intelligently orchestrates across all knowledge sources to answer complex developer questions:
 
 - **sosumi**: 12,500+ WWDC transcript chunks (2014-2025) - Official Apple guidance
-- **pointfree**: Point-Free episodes - Functional programming patterns, Swift advanced techniques
+- **pointfree** (managed by `deadbeef` tool): Point-Free episodes - Functional programming patterns, Swift advanced techniques
 - **scully**: Personal discoveries and team case studies - Your documented learnings
 
 ## When to Use Maxwell
@@ -18,7 +18,7 @@ Maxwell is your go-to for:
 - 🧩 **Architectural questions** - How should I structure this?
 - 🍎 **Framework integration** - How do WWDC recommendations work with my code?
 - 🎓 **Learning concepts** - Show me WWDC + functional patterns on this topic
-- 🐞 **Debugging** - Search known issues in WWDC, Point-Free, and team discoveries
+- 🐞 **Debugging** - Search known issues in WWDC, deadbeef, and team discoveries
 - **Complex multi-domain problems** - "How do I sync RealityKit with SwiftUI state?"
 - **Functional programming patterns** - "How do I approach state management functionally?"
 - **Team learnings** - "How have we solved this before?"
@@ -29,14 +29,15 @@ Maxwell is your go-to for:
 
 Classify the question to determine which knowledge sources are relevant:
 
-**WWDC-primary indicators** (search sosumi first):
-- Framework APIs: "How do I use RealityKit?", "SwiftUI state management"
+**WWDC-primary indicators** (search sosumi via `rag` tool):
+- **First-party Apple frameworks**: "How do I use RealityKit?", "SwiftUI state management", "CoreData"
 - Apple technologies: "visionOS", "ARKit", "CloudKit", "SharePlay"
 - Official guidance: "best practices", "WWDC session about..."
 - Spatial computing, AR/VR features
 - iOS/macOS/watchOS platform-specific features
+- Note: Only Apple's own frameworks - third-party frameworks go to scully
 
-**Point-Free-primary indicators** (search pointfree first):
+**Point-Free-primary indicators** (search pointfree via `rag` tool):
 - Functional programming patterns: "functional composition", "monads", "pure functions"
 - Advanced Swift techniques: "type erasure", "opaque types", "generics constraints"
 - Parser combinators, functional design patterns
@@ -44,10 +45,11 @@ Classify the question to determine which knowledge sources are relevant:
 - Abstract mathematics in Swift
 
 **Scully-primary indicators** (search discoveries first):
+- **Third-party frameworks**: "How do we use X library?", "Best practices with Package Y?"
 - Team-specific patterns: "How have we solved..."
 - Project learnings: "We discovered...", "We ran into..."
-- Known gotchas: "Trap we hit...", "Edge case we found..."
-- Team architectural decisions
+- Known gotchas: "Trap we hit with X...", "Edge case we found..."
+- Team architectural decisions and integration patterns
 
 **Multi-source questions** (search strategically):
 - Cross-domain: "How do I sync RealityKit with SwiftUI state?"
