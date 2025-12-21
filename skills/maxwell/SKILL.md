@@ -9,7 +9,7 @@ allowed-tools: Bash, Grep, Read
 Maxwell intelligently orchestrates across all knowledge sources to answer complex developer questions:
 
 - **sosumi**: 12,500+ WWDC transcript chunks (2014-2025) - Official Apple guidance
-- **pointfree** (managed by `deadbeef` tool): Point-Free episodes - Functional programming patterns, Swift advanced techniques
+- **deadbeef**: Point-Free episodes - TCA (The Composable Architecture), functional programming patterns, Swift advanced techniques
 - **scully**: Personal discoveries and team case studies - Your documented learnings
 
 ## When to Use Maxwell
@@ -37,7 +37,8 @@ Classify the question to determine which knowledge sources are relevant:
 - iOS/macOS/watchOS platform-specific features
 - Note: Only Apple's own frameworks - third-party frameworks go to scully
 
-**Point-Free-primary indicators** (search pointfree via `rag` tool):
+**Deadbeef-primary indicators** (search deadbeef via `rag` tool):
+- **TCA / The Composable Architecture**: "TCA store", "@Shared", "BindableStore", "Reducer", "Effect"
 - Functional programming patterns: "functional composition", "monads", "pure functions"
 - Advanced Swift techniques: "type erasure", "opaque types", "generics constraints"
 - Parser combinators, functional design patterns
@@ -87,10 +88,11 @@ rag search "<query>" --database ~/.smith/rag/sosumi.db --limit 5
 - Look for score >= 0.70 as "good relevance"
 - Increase limit only if first results are weak
 
-**Point-Free (pointfree)**:
+**Deadbeef (TCA & Point-Free)**:
 ```bash
-rag search "<query>" --database ~/.smith/rag/pointfree.db --limit 5
+rag search "<query>" --database ~/.smith/rag/deadbeef.db --limit 5
 ```
+- TCA (The Composable Architecture), @Shared, BindableStore, Reducer
 - Functional programming, advanced Swift techniques
 - Swift design patterns
 - Language-level features
@@ -114,7 +116,7 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 **Example combination**:
 - User: "How should I manage state in a complex RealityKit experience?"
 - Search sosumi → Returns WWDC sessions on RealityKit architecture
-- Combine with pointfree insights on functional state management
+- Combine with deadbeef insights on functional state management
 - Result: "WWDC recommends X for RealityKit, but here's how to make it composable with functional patterns..."
 
 ## When to Not Use Maxwell
@@ -146,15 +148,15 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 **Query**: "I'm building a RealityKit experience controlled by SwiftUI"
 - **Classify**: Cross-domain (sosumi for RealityKit, may need SwiftUI state patterns)
 - **Search sosumi**: RealityKit + SwiftUI integration
-- **If weak**: Search pointfree for functional state approaches
+- **If weak**: Search deadbeef for functional state approaches
 - **Combine**: Integration patterns from WWDC + functional state management theory
 
 ### Example 4: Parser Combinators
 **Query**: "How do I implement parser combinators in Swift?"
-- **Classify**: Point-Free primary (functional programming pattern)
-- **Search pointfree first**: Parser combinator episodes
+- **Classify**: Deadbeef primary (functional programming pattern)
+- **Search deadbeef first**: Parser combinator episodes
 - **Skip sosumi**: Not an WWDC topic
-- **Result**: Point-Free is authoritative, don't waste context on sosumi
+- **Result**: Deadbeef/Point-Free is authoritative, don't waste context on sosumi
 
 ### Example 5: Team Pattern Lookup
 **Query**: "How have we handled @Shared race conditions before?"
@@ -166,14 +168,14 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 
 ### Example 6: Advanced Swift Techniques
 **Query**: "How do I implement parser combinators in Swift?"
-- **Classify**: Point-Free primary (functional programming pattern)
-- **Search pointfree first**: Parser combinator episodes and techniques
+- **Classify**: Deadbeef primary (functional programming pattern)
+- **Search deadbeef first**: Parser combinator episodes and techniques
 - **Skip sosumi**: Not a WWDC topic
-- **Result**: Point-Free is authoritative for this domain
+- **Result**: Deadbeef/Point-Free is authoritative for this domain
 
 ## Tools Available
 
-- **Bash**: Execute `rag search` commands to query sosumi/pointfree databases
+- **Bash**: Execute `rag search` commands to query sosumi/deadbeef databases
 - **Grep**: Search personal discoveries in `~/.claude/resources/discoveries/`
 - **Read**: Load full search result chunks or discovery files for deeper understanding
 
@@ -182,7 +184,7 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 **This Skill (Maxwell)**: Intelligent orchestrator of all knowledge sources
 - Runs automatically when you ask development questions
 - Analyzes your query to determine which sources are most relevant
-- Routes searches intelligently: sosumi (WWDC), pointfree (patterns), scully (team learnings)
+- Routes searches intelligently: sosumi (WWDC), deadbeef (TCA/patterns), scully (team learnings)
 - Combines results thoughtfully - avoiding noise while being comprehensive
 - Example: "How do we handle X?" searches discoveries first, then validates against WWDC
 
@@ -202,10 +204,10 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 - **Use**: Framework questions, official recommendations, spatial computing
 - **Engine**: MLX embeddings, Qwen3-0.6B model, entirely offline
 
-### pointfree: Functional Programming & Advanced Swift
-- **Content**: Point-Free episodes on functional programming
-- **Coverage**: Parser combinators, type theory, advanced Swift patterns
-- **Use**: Functional architecture, language deep dives, design patterns
+### deadbeef: TCA, Functional Programming & Advanced Swift
+- **Content**: Point-Free episodes on TCA and functional programming
+- **Coverage**: TCA (The Composable Architecture), parser combinators, type theory, advanced Swift patterns
+- **Use**: TCA questions, functional architecture, language deep dives, design patterns
 - **Engine**: Same MLX + RAG system
 
 ## Related Skills
@@ -219,5 +221,5 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 - **Execution**: Offline on Apple Silicon GPU (no external API calls)
 - **Knowledge Bases**:
   - `~/.smith/rag/sosumi.db` - WWDC transcripts
-  - `~/.smith/rag/pointfree.db` - Point-Free episodes
+  - `~/.smith/rag/deadbeef.db` - Point-Free episodes (TCA, functional programming)
   - `~/.claude/resources/discoveries/` - Personal discoveries (file-based, searched via Grep)
