@@ -16,7 +16,7 @@ set -e
 # Configuration
 RAG_HOME="${HOME}/.smith/rag"
 SOSUMI_DB="${RAG_HOME}/sosumi.db"
-POINTFREE_DB="${RAG_HOME}/pointfree.db"
+POINTFREE_DB="${RAG_HOME}/deadbeef.db"
 DISCOVERIES_DIR="${HOME}/.claude/resources/discoveries"
 DEFAULT_LIMIT=5
 
