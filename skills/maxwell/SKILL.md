@@ -1,6 +1,6 @@
 ---
 name: maxwell
-description: Intelligent orchestrator of all development knowledge. Routes queries across WWDC (sosumi), functional patterns (pointfree), and personal discoveries (scully). Analyzes questions and synthesizes comprehensive answers from all available sources.
+description: Intelligent orchestrator of all development knowledge. Routes queries across WWDC (sosumi), functional patterns (deadbeef), and personal discoveries (scully). Analyzes questions and synthesizes comprehensive answers from all available sources.
 allowed-tools: Bash, Grep, Read
 ---
 
@@ -71,7 +71,7 @@ Classify the question to determine which knowledge sources are relevant:
 - Secondary source: Only if primary has <3 high-quality results (score >0.65)
 - Example: "How do I structure state in complex RealityKit+SwiftUI app?"
   1. Search sosumi for architecture patterns
-  2. If weak results, search pointfree for functional state patterns
+  2. If weak results, search deadbeef for functional state patterns
 
 **Comparative questions**: Search both, compare approaches
 - "What's the difference between..." → Both databases
@@ -141,7 +141,7 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 - **Classify**: Multi-source (architecture + patterns)
 - **Search sosumi first**: Architecture patterns from WWDC
 - **Evaluate**: If results are strong (score >0.68), present those
-- **Consider pointfree**: If asking for functional approach, add pointfree insights
+- **Consider deadbeef**: If asking for functional approach, add deadbeef insights
 - **Combine**: "WWDC recommends [X], here's how to make it more composable..."
 
 ### Example 3: SwiftUI + RealityKit Integration
