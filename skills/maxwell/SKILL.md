@@ -29,7 +29,7 @@ Maxwell is your go-to for:
 
 Classify the question to determine which knowledge sources are relevant:
 
-**WWDC-primary indicators** (search sosumi via `rag` tool):
+**WWDC-primary indicators** (route to sosumi results):
 - **First-party Apple frameworks**: "How do I use RealityKit?", "SwiftUI state management", "CoreData"
 - Apple technologies: "visionOS", "ARKit", "CloudKit", "SharePlay"
 - Official guidance: "best practices", "WWDC session about..."
@@ -37,7 +37,7 @@ Classify the question to determine which knowledge sources are relevant:
 - iOS/macOS/watchOS platform-specific features
 - Note: Only Apple's own frameworks - third-party frameworks go to scully
 
-**Deadbeef-primary indicators** (search deadbeef via `rag` tool):
+**Deadbeef-primary indicators** (route to deadbeef results):
 - **TCA / The Composable Architecture**: "TCA store", "@Shared", "BindableStore", "Reducer", "Effect"
 - Functional programming patterns: "functional composition", "monads", "pure functions"
 - Advanced Swift techniques: "type erasure", "opaque types", "generics constraints"
@@ -61,14 +61,13 @@ Classify the question to determine which knowledge sources are relevant:
 
 ### Step 2: Route Intelligently
 
-**Single-source queries**: Search only the primary source
-- Fast, focused results
-- No irrelevant noise
-- Example: "RealityKit animation" → search sosumi only
+**Single-source queries**: Search, then focus on the primary source section
+- Maxwell CLI searches both sources; if a query is single-source, only use that section
+- Example: "RealityKit animation" → use only sosumi results
 
 **Multi-source queries**: Search primary first, then secondary if primary is weak
 - Primary source: full results
-- Secondary source: Only if primary has <3 high-quality results (score >0.65)
+- Secondary source: Only if primary has <3 high-quality results (score >0.70)
 - Example: "How do I structure state in complex RealityKit+SwiftUI app?"
   1. Search sosumi for architecture patterns
   2. If weak results, search deadbeef for functional state patterns
@@ -80,26 +79,30 @@ Classify the question to determine which knowledge sources are relevant:
 
 ### Step 3: Search Execution
 
-**WWDC/Apple (sosumi)**:
+**Unified entry point (preferred)**:
 ```bash
-rag search "<query>" --database ~/.smith/rag/sosumi.db --limit 5
+maxwell search "<query>" --limit 5
 ```
-- Start with limit=5 to avoid noise
-- Look for score >= 0.70 as "good relevance"
-- Increase limit only if first results are weak
+- Maxwell CLI orchestrates searches across sosumi and deadbeef
+- Do not call `smith-rag` directly from the skill surface
+- Use `--sosumi-only` or `--deadbeef-only` when the query is clearly single-source
+- Use `--exact` for precise tokens (symbols, API names, error strings); use `--semantic` for concept-level questions
 
-**Deadbeef (TCA & Point-Free)**:
-```bash
-rag search "<query>" --database ~/.smith/rag/deadbeef.db --limit 5
-```
-- TCA (The Composable Architecture), @Shared, BindableStore, Reducer
-- Functional programming, advanced Swift techniques
-- Swift design patterns
-- Language-level features
+**Result handling**:
+- If the question is WWDC/Apple-primary, focus on the sosumi section
+- If the question is Point-Free/TCA-primary, focus on the deadbeef section
+- For mixed queries, blend both sections deliberately
+
+**DocC access (Apple documentation pages)**:
+- Use `maxwell docc-search "<query>"` to locate the right DocC page
+- Use `maxwell docc-fetch "<path-or-url>"` to fetch the full page content via `smith-doc-inspector` (`--format text|json`)
+- If the user provides a DocC URL/path, `maxwell search` should route to `docc-fetch`
+- `docc-search` is Apple-only (sosumi); `docc-fetch` is generic DocC
+- For repo example discovery, use `smith-doc-inspector examples <repo|url>`
 
 **Personal Discoveries (scully)** - If available:
 ```bash
-grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
+grep -r "<pattern>" scully/discoveries --include="*.md" -i
 ```
 - Team-specific learnings and case studies
 - Known issues and solutions
@@ -166,17 +169,17 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 - **Optional**: Search sosumi for official thread safety guidance
 - **Result**: Team pattern validated against WWDC guidance
 
-### Example 6: Advanced Swift Techniques
-**Query**: "How do I implement parser combinators in Swift?"
-- **Classify**: Deadbeef primary (functional programming pattern)
-- **Search deadbeef first**: Parser combinator episodes and techniques
-- **Skip sosumi**: Not a WWDC topic
-- **Result**: Deadbeef/Point-Free is authoritative for this domain
+### Example 6: Exact-Term Lookup
+**Query**: "What does `GroupSessionMessenger` do exactly?"
+- **Classify**: WWDC-primary (Apple framework API)
+- **Search**: `maxwell search "GroupSessionMessenger"`
+- **If results are vague**: Retry with exact term tokens or add adjacent API names
+- **Result**: Prefer sosumi hits that cite WWDC sessions with concrete API details
 
 ## Tools Available
 
-- **Bash**: Execute `rag search` commands to query sosumi/deadbeef databases
-- **Grep**: Search personal discoveries in `~/.claude/resources/discoveries/`
+- **Bash**: Execute `maxwell search` commands (no direct `smith-rag` usage from the skill)
+- **Grep**: Search personal discoveries in `scully/discoveries/`
 - **Read**: Load full search result chunks or discovery files for deeper understanding
 
 ## Architecture: Skill vs. CLI
@@ -188,11 +191,10 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 - Combines results thoughtfully - avoiding noise while being comprehensive
 - Example: "How do we handle X?" searches discoveries first, then validates against WWDC
 
-**Maxwell CLI (`maxwell search`)**: Simple convenience tool for direct multi-source searches
+**Maxwell CLI (`maxwell search`)**: Single entry point for knowledge queries
 - Available at `~/.local/bin/maxwell`
-- Searches all available databases at once
-- Useful for quick exploratory searches
-- Not intelligent routing - just parallel search of all sources
+- Searches sosumi + deadbeef in one call
+- Use source sections in the output to route the answer
 
 **Recommended**: Let this Skill handle your questions - it will orchestrate intelligently. Use the CLI only for exploratory searches where you want all sources combined.
 
@@ -202,13 +204,13 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 - **Content**: 12,500+ WWDC transcript chunks (2014-2025)
 - **Coverage**: Official Apple guidance on frameworks, APIs, best practices
 - **Use**: Framework questions, official recommendations, spatial computing
-- **Engine**: MLX embeddings, Qwen3-0.6B model, entirely offline
+- **Search**: Semantic search with exact-term fallback (FTS5 maintained)
 
 ### deadbeef: TCA, Functional Programming & Advanced Swift
 - **Content**: Point-Free episodes on TCA and functional programming
 - **Coverage**: TCA (The Composable Architecture), parser combinators, type theory, advanced Swift patterns
 - **Use**: TCA questions, functional architecture, language deep dives, design patterns
-- **Engine**: Same MLX + RAG system
+- **Search**: Semantic search only (RAG)
 
 ## Related Skills
 
@@ -216,8 +218,7 @@ grep -r "<pattern>" ~/.claude/resources/discoveries/ --include="*.md" -i
 
 ## Technical Stack
 
-- **Search Engine**: SmithRAG (semantic search for RAG databases)
-- **Embeddings**: MLX Qwen3-Embedding-0.6B-4bit (1024d vectors)
+- **Search Engine**: SmithRAG (semantic search)
 - **Execution**: Offline on Apple Silicon GPU (no external API calls)
 - **Knowledge Bases**:
   - `~/.smith/rag/sosumi.db` - WWDC transcripts

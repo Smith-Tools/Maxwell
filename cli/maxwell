@@ -9,6 +9,12 @@
 # Usage:
 #   maxwell search "<query>"                    # Search all sources
 #   maxwell search "<query>" --limit 10         # Limit results per source
+#   maxwell search "<query>" --sosumi-only      # Search WWDC only
+#   maxwell search "<query>" --deadbeef-only    # Search Point-Free only
+#   maxwell search "<query>" --exact            # Exact-term search
+#   maxwell search "<query>" --semantic         # Semantic-only search
+#   maxwell docc-search "<query>"               # Search Apple DocC
+#   maxwell docc-fetch "<path-or-url>"          # Fetch any DocC page
 #   maxwell help                                 # Show help
 
 set -e
@@ -16,7 +22,7 @@ set -e
 # Configuration
 RAG_HOME="${HOME}/.smith/rag"
 SOSUMI_DB="${RAG_HOME}/sosumi.db"
-POINTFREE_DB="${RAG_HOME}/deadbeef.db"
+DEADBEF_DB="${RAG_HOME}/deadbeef.db"
 DISCOVERIES_DIR="${HOME}/.claude/resources/discoveries"
 DEFAULT_LIMIT=5
 
@@ -41,6 +47,18 @@ ${GREEN}COMMANDS:${NC}
                               maxwell search "RealityKit animation"
                               maxwell search "SwiftUI state management"
                               maxwell search "visionOS immersive spaces"
+                              maxwell search "@Shared" --deadbeef-only
+
+  docc-search <query>       Search Apple DocC (via sosumi docs)
+                            Examples:
+                              maxwell docc-search "glassEffect"
+                              maxwell docc-search "ScrollTransition" --limit 5
+                              maxwell docc-search "View" --symbol
+
+  docc-fetch <path-or-url>  Fetch any DocC page (via smith-doc-inspector)
+                            Examples:
+                              maxwell docc-fetch "swiftui/view"
+                              maxwell docc-fetch "https://developer.apple.com/documentation/swiftui/view"
 
   discoveries <query>       Search personal discoveries only
                             (Coming soon)
@@ -49,6 +67,11 @@ ${GREEN}COMMANDS:${NC}
 
 ${GREEN}OPTIONS:${NC}
   --limit N                 Limit results to N items (default: $DEFAULT_LIMIT)
+  --sosumi-only             Search WWDC transcripts only
+  --deadbeef-only           Search Point-Free transcripts only
+  --exact                   Exact-term FTS5 search (skip embeddings)
+  --semantic                Semantic-only search (no keyword matches)
+  --symbol                  DocC search convenience flag (symbol type)
   -h, --help                Show this help message
 
 ${GREEN}EXAMPLES:${NC}
@@ -61,23 +84,79 @@ ${GREEN}EXAMPLES:${NC}
   # Search for visionOS
   maxwell search "visionOS immersive space integration"
 
+  # Search Point-Free only
+  maxwell search "@Shared" --deadbeef-only
+
+  # Exact-term search (symbols, APIs, errors)
+  maxwell search "AnimationPlaybackController" --exact
+
+  # Apple DocC search
+  maxwell docc-search "glassEffect" --limit 5
+  maxwell docc-search "View" --symbol
+
+  # Apple DocC fetch
+  maxwell docc-fetch "https://developer.apple.com/documentation/swiftui/view"
+
 EOF
+}
+
+normalize_docc_fetch_input() {
+    local raw="$1"
+    raw="${raw%%\?*}"
+    raw="${raw%%\#*}"
+    echo "$raw"
+}
+
+is_docc_path() {
+    local raw="$1"
+    if [[ "$raw" == https://developer.apple.com/documentation/* ]] || \
+       [[ "$raw" == http://developer.apple.com/documentation/* ]] || \
+       [[ "$raw" == documentation/* ]] || \
+       [[ "$raw" == doc://* ]]; then
+        return 0
+    fi
+    return 1
 }
 
 # Validate rag databases exist
 check_databases() {
+    local need_sosumi="$1"
+    local need_deadbeef="$2"
     local has_db=0
+    local missing_required=0
 
-    if [ ! -f "$SOSUMI_DB" ]; then
-        echo -e "${YELLOW}⚠️  WWDC database not found: $SOSUMI_DB${NC}"
+    if [ "$need_sosumi" -eq 1 ]; then
+        if [ ! -f "$SOSUMI_DB" ]; then
+            echo -e "${RED}❌ Error: WWDC database not found: $SOSUMI_DB${NC}"
+            missing_required=1
+        else
+            has_db=1
+        fi
     else
-        has_db=1
+        if [ ! -f "$SOSUMI_DB" ]; then
+            echo -e "${YELLOW}⚠️  WWDC database not found: $SOSUMI_DB${NC}"
+        else
+            has_db=1
+        fi
     fi
 
-    if [ ! -f "$POINTFREE_DB" ]; then
-        echo -e "${YELLOW}⚠️  Point-Free database not found: $POINTFREE_DB${NC}"
+    if [ "$need_deadbeef" -eq 1 ]; then
+        if [ ! -f "$DEADBEF_DB" ]; then
+            echo -e "${RED}❌ Error: deadbeef database not found: $DEADBEF_DB${NC}"
+            missing_required=1
+        else
+            has_db=1
+        fi
     else
-        has_db=1
+        if [ ! -f "$DEADBEF_DB" ]; then
+            echo -e "${YELLOW}⚠️  deadbeef database not found: $DEADBEF_DB${NC}"
+        else
+            has_db=1
+        fi
+    fi
+
+    if [ "$missing_required" -eq 1 ]; then
+        exit 1
     fi
 
     if [ "$has_db" -eq 0 ]; then
@@ -94,6 +173,10 @@ check_databases() {
 orchestrate_search() {
     local query="$1"
     local limit="${2:-$DEFAULT_LIMIT}"
+    local source="${3:-all}"
+    local mode="${4:-hybrid}"
+    local search_sosumi=1
+    local search_deadbeef=1
 
     if [ -z "$query" ]; then
         echo -e "${RED}❌ Error: query required${NC}"
@@ -102,48 +185,86 @@ orchestrate_search() {
         exit 1
     fi
 
-    check_databases
+    case "$source" in
+        sosumi)
+            search_deadbeef=0
+            ;;
+        deadbeef)
+            search_sosumi=0
+            ;;
+    esac
+
+    check_databases "$search_sosumi" "$search_deadbeef"
 
     echo -e "${BLUE}🔍 Maxwell: Orchestrating knowledge sources...${NC}"
     echo -e "${BLUE}Query: \"$query\"${NC}"
-    echo -e "${BLUE}Searching: WWDC (sosumi) + Point-Free${NC}\n"
+
+    local sources_label=""
+    if [ "$search_sosumi" -eq 1 ]; then
+        sources_label="WWDC (sosumi)"
+    fi
+    if [ "$search_deadbeef" -eq 1 ]; then
+        if [ -n "$sources_label" ]; then
+            sources_label="$sources_label + deadbeef"
+        else
+            sources_label="deadbeef"
+        fi
+    fi
+    local mode_label="hybrid"
+    case "$mode" in
+        exact) mode_label="exact" ;;
+        semantic) mode_label="semantic" ;;
+    esac
+    echo -e "${BLUE}Searching: $sources_label (${mode_label})${NC}\n"
 
     # Create temporary files for results
     local temp_sosumi=$(mktemp)
-    local temp_pointfree=$(mktemp)
+    local temp_deadbeef=$(mktemp)
     local merged_results=$(mktemp)
 
     # Search sosumi (WWDC & Apple)
-    if [ -f "$SOSUMI_DB" ]; then
+    if [ "$search_sosumi" -eq 1 ] && [ -f "$SOSUMI_DB" ]; then
         echo -e "${GREEN}📚 Searching WWDC (sosumi)...${NC}"
-        rag search "$query" --database "$SOSUMI_DB" --limit "$limit" > "$temp_sosumi" 2>&1 || true
+        if [ "$mode" = "exact" ]; then
+            smith-rag search "$query" --database "$SOSUMI_DB" --limit "$limit" --exact > "$temp_sosumi" 2>&1 || true
+        elif [ "$mode" = "semantic" ]; then
+            smith-rag search "$query" --database "$SOSUMI_DB" --limit "$limit" --semantic > "$temp_sosumi" 2>&1 || true
+        else
+            smith-rag search "$query" --database "$SOSUMI_DB" --limit "$limit" > "$temp_sosumi" 2>&1 || true
+        fi
     fi
 
-    # Search pointfree
-    if [ -f "$POINTFREE_DB" ]; then
-        echo -e "${GREEN}📚 Searching Point-Free (pointfree)...${NC}"
-        rag search "$query" --database "$POINTFREE_DB" --limit "$limit" > "$temp_pointfree" 2>&1 || true
+    # Search deadbeef
+    if [ "$search_deadbeef" -eq 1 ] && [ -f "$DEADBEF_DB" ]; then
+        echo -e "${GREEN}📚 Searching deadbeef...${NC}"
+        if [ "$mode" = "exact" ]; then
+            smith-rag search "$query" --database "$DEADBEF_DB" --limit "$limit" --exact > "$temp_deadbeef" 2>&1 || true
+        elif [ "$mode" = "semantic" ]; then
+            smith-rag search "$query" --database "$DEADBEF_DB" --limit "$limit" --semantic > "$temp_deadbeef" 2>&1 || true
+        else
+            smith-rag search "$query" --database "$DEADBEF_DB" --limit "$limit" > "$temp_deadbeef" 2>&1 || true
+        fi
     fi
 
     echo ""
     echo -e "${BLUE}=== RESULTS ===${NC}\n"
 
     # Output sosumi results
-    if [ -f "$SOSUMI_DB" ] && [ -s "$temp_sosumi" ]; then
+    if [ "$search_sosumi" -eq 1 ] && [ -f "$SOSUMI_DB" ] && [ -s "$temp_sosumi" ]; then
         echo -e "${GREEN}📕 From WWDC & Apple (sosumi):${NC}"
         head -30 "$temp_sosumi" | grep -v "info smith-rag" || true
         echo ""
     fi
 
-    # Output pointfree results
-    if [ -f "$POINTFREE_DB" ] && [ -s "$temp_pointfree" ]; then
-        echo -e "${GREEN}📗 From Point-Free (pointfree):${NC}"
-        head -30 "$temp_pointfree" | grep -v "info smith-rag" || true
+    # Output deadbeef results
+    if [ "$search_deadbeef" -eq 1 ] && [ -f "$DEADBEF_DB" ] && [ -s "$temp_deadbeef" ]; then
+        echo -e "${GREEN}📗 From deadbeef:${NC}"
+        head -30 "$temp_deadbeef" | grep -v "info smith-rag" || true
         echo ""
     fi
 
     # Cleanup
-    rm -f "$temp_sosumi" "$temp_pointfree" "$merged_results"
+    rm -f "$temp_sosumi" "$temp_deadbeef" "$merged_results"
 }
 
 # Main CLI logic
@@ -153,6 +274,10 @@ main() {
             shift  # Remove 'search' from args
             local query=""
             local limit="$DEFAULT_LIMIT"
+            local source="all"
+            local source_override=0
+            local mode="hybrid"
+            local mode_override=0
 
             # Parse arguments
             while [[ $# -gt 0 ]]; do
@@ -160,6 +285,46 @@ main() {
                     --limit)
                         limit="$2"
                         shift 2
+                        ;;
+                    --symbol)
+                        echo -e "${RED}❌ Error: --symbol is only for docc-search${NC}"
+                        exit 1
+                        ;;
+                    --sosumi-only)
+                        if [ "$source_override" -eq 1 ] && [ "$source" != "sosumi" ]; then
+                            echo -e "${RED}❌ Error: choose only one source flag${NC}"
+                            exit 1
+                        fi
+                        source="sosumi"
+                        source_override=1
+                        shift
+                        ;;
+                    --deadbeef-only)
+                        if [ "$source_override" -eq 1 ] && [ "$source" != "deadbeef" ]; then
+                            echo -e "${RED}❌ Error: choose only one source flag${NC}"
+                            exit 1
+                        fi
+                        source="deadbeef"
+                        source_override=1
+                        shift
+                        ;;
+                    --exact)
+                        if [ "$mode_override" -eq 1 ] && [ "$mode" != "exact" ]; then
+                            echo -e "${RED}❌ Error: choose only one search mode flag${NC}"
+                            exit 1
+                        fi
+                        mode="exact"
+                        mode_override=1
+                        shift
+                        ;;
+                    --semantic)
+                        if [ "$mode_override" -eq 1 ] && [ "$mode" != "semantic" ]; then
+                            echo -e "${RED}❌ Error: choose only one search mode flag${NC}"
+                            exit 1
+                        fi
+                        mode="semantic"
+                        mode_override=1
+                        shift
                         ;;
                     -h|--help)
                         show_help
@@ -174,7 +339,72 @@ main() {
                 esac
             done
 
-            orchestrate_search "$query" "$limit"
+            if is_docc_path "$query"; then
+                local doc_input
+                doc_input="$(normalize_docc_fetch_input "$query")"
+                smith-doc-inspector docs "$doc_input"
+                exit 0
+            fi
+
+            orchestrate_search "$query" "$limit" "$source" "$mode"
+            ;;
+
+        docc-search)
+            shift
+            local query="$1"
+            if [ -z "$query" ]; then
+                echo -e "${RED}❌ Error: query required${NC}"
+                echo ""
+                show_help
+                exit 1
+            fi
+            shift
+            local passthrough=()
+            while [[ $# -gt 0 ]]; do
+                case "$1" in
+                    --symbol)
+                        passthrough+=("--type" "symbol")
+                        shift
+                        ;;
+                    *)
+                        passthrough+=("$1")
+                        shift
+                        ;;
+                esac
+            done
+            sosumi docs "$query" "${passthrough[@]}"
+            ;;
+
+        docc-fetch)
+            shift
+            local raw_path="$1"
+            if [ -z "$raw_path" ]; then
+                echo -e "${RED}❌ Error: path or URL required${NC}"
+                echo ""
+                show_help
+                exit 1
+            fi
+            shift
+            local doc_input
+            doc_input="$(normalize_docc_fetch_input "$raw_path")"
+            local passthrough=()
+            while [[ $# -gt 0 ]]; do
+                case "$1" in
+                    --format)
+                        if [ "$2" = "markdown" ]; then
+                            passthrough+=("--format" "text")
+                        else
+                            passthrough+=("--format" "$2")
+                        fi
+                        shift 2
+                        ;;
+                    *)
+                        passthrough+=("$1")
+                        shift
+                        ;;
+                esac
+            done
+            smith-doc-inspector docs "$doc_input" "${passthrough[@]}"
             ;;
 
         discoveries)
