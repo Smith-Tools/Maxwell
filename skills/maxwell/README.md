@@ -32,7 +32,7 @@ Maxwell routes developer questions to the right knowledge sources and uses the `
    maxwell docc-search "View" --symbol
    maxwell docc-fetch "https://developer.apple.com/documentation/swiftui/view" --format text
    ```
-   - `docc-search` is Apple-only (sosumi)
+   - `docc-search` is Apple-only (sosumi, defaults to `--format compact --limit 5`)
    - `docc-fetch` is generic DocC (smith-doc-inspector, `--format text|json`)
    - Use `smith-doc-inspector examples <repo|url>` for repo example discovery
 

@@ -49,7 +49,7 @@ ${GREEN}COMMANDS:${NC}
                               maxwell search "visionOS immersive spaces"
                               maxwell search "@Shared" --deadbeef-only
 
-  docc-search <query>       Search Apple DocC (via sosumi docs)
+  docc-search <query>       Search Apple DocC (via sosumi docs, defaults to compact/limit 5)
                             Examples:
                               maxwell docc-search "glassEffect"
                               maxwell docc-search "ScrollTransition" --limit 5
@@ -91,7 +91,7 @@ ${GREEN}EXAMPLES:${NC}
   maxwell search "AnimationPlaybackController" --exact
 
   # Apple DocC search
-  maxwell docc-search "glassEffect" --limit 5
+  maxwell docc-search "glassEffect"
   maxwell docc-search "View" --symbol
 
   # Apple DocC fetch
@@ -359,12 +359,30 @@ main() {
                 exit 1
             fi
             shift
+            if is_docc_path "$query"; then
+                local doc_input
+                doc_input="$(normalize_docc_fetch_input "$query")"
+                smith-doc-inspector docs "$doc_input"
+                exit 0
+            fi
             local passthrough=()
+            local has_limit=0
+            local has_format=0
             while [[ $# -gt 0 ]]; do
                 case "$1" in
                     --symbol)
                         passthrough+=("--type" "symbol")
                         shift
+                        ;;
+                    --limit)
+                        passthrough+=("--limit" "$2")
+                        has_limit=1
+                        shift 2
+                        ;;
+                    --format)
+                        passthrough+=("--format" "$2")
+                        has_format=1
+                        shift 2
                         ;;
                     *)
                         passthrough+=("$1")
@@ -372,6 +390,12 @@ main() {
                         ;;
                 esac
             done
+            if [ "$has_limit" -eq 0 ]; then
+                passthrough+=("--limit" "5")
+            fi
+            if [ "$has_format" -eq 0 ]; then
+                passthrough+=("--format" "compact")
+            fi
             sosumi docs "$query" "${passthrough[@]}"
             ;;
 

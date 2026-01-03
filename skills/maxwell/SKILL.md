@@ -97,7 +97,7 @@ maxwell search "<query>" --limit 5
 - Use `maxwell docc-search "<query>"` to locate the right DocC page
 - Use `maxwell docc-fetch "<path-or-url>"` to fetch the full page content via `smith-doc-inspector` (`--format text|json`)
 - If the user provides a DocC URL/path, `maxwell search` should route to `docc-fetch`
-- `docc-search` is Apple-only (sosumi); `docc-fetch` is generic DocC
+- `docc-search` is Apple-only (sosumi, defaults to `--format compact --limit 5`); `docc-fetch` is generic DocC
 - For repo example discovery, use `smith-doc-inspector examples <repo|url>`
 
 **Personal Discoveries (scully)** - If available:
