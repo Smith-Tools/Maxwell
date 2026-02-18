@@ -23,6 +23,32 @@ Maxwell is your go-to for:
 - **Functional programming patterns** - "How do I approach state management functionally?"
 - **Team learnings** - "How have we solved this before?"
 
+## Quick Start (Token-Efficient)
+
+Use this default flow unless the user asks for deep research:
+
+1. Route by intent:
+- Apple API/WWDC -> `maxwell search "<query>" --sosumi-only --limit 5`
+- TCA/functional patterns -> `maxwell search "<query>" --deadbeef-only --limit 5`
+- Known team decisions/gotchas -> grep `scully/discoveries` first
+
+2. For official API page linking/evidence:
+- Find page: `maxwell docc-search "<symbol or API>" --limit 5`
+- Fetch page: `maxwell docc-fetch "<path-or-url>" --format text`
+
+3. Keep responses compact by default:
+- Cite 1-3 strongest sources
+- Prefer short paraphrase + URL over long excerpts
+- Expand only when the user asks for depth
+
+## Routing Matrix
+
+- `Apple frameworks, platform behavior, WWDC recommendations` -> sosumi first
+- `TCA, Point-Free patterns, functional architecture` -> deadbeef first
+- `Team history, prior incidents, local decisions` -> scully first
+- `Cross-domain architecture` -> primary source first, secondary only if weak coverage
+- `Official docs URL/content lookup` -> DocC path (`docc-search`, `docc-fetch`)
+
 ## Orchestration Strategy
 
 ### Step 1: Analyze the Query
@@ -125,7 +151,6 @@ grep -r "<pattern>" scully/discoveries --include="*.md" -i
 ## When to Not Use Maxwell
 
 **Skip Maxwell entirely if**:
-- Question is about API documentation (point them to Developer.apple.com)
 - Needs specific implementation details (user should read source code)
 - Outside scope: web development, non-Apple platforms
 - Better served by other tools (profiling → Instruments, benchmarking → performance tools)
