@@ -428,7 +428,11 @@ main() {
                         ;;
                 esac
             done
-            smith-doc-inspector docs "$doc_input" "${passthrough[@]}"
+            if [ ${#passthrough[@]} -gt 0 ]; then
+                smith-doc-inspector docs "$doc_input" "${passthrough[@]}"
+            else
+                smith-doc-inspector docs "$doc_input"
+            fi
             ;;
 
         discoveries)
